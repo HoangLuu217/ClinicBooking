@@ -30,11 +30,11 @@ public class PrescriptionItem {
     @JoinColumn(name = "MedicineID", nullable = false)
     private Medicine medicine;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String dosage;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String duration;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String note;
     
     @Column(name = "Quantity")

@@ -32,7 +32,7 @@ public class Prescription {
     private MedicalRecord medicalRecord;
 
     private LocalDateTime createdAt;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)

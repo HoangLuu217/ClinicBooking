@@ -31,11 +31,11 @@ public class Department {
 
     @NotBlank(message = "Tên khoa không được để trống")
     @Size(max = 100, message = "Tên khoa không được quá 100 ký tự")
-    @Column(name = "DepartmentName", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "DepartmentName", nullable = false, columnDefinition = "TEXT")
     private String departmentName;
 
     @Size(max = 255, message = "Mô tả không được quá 255 ký tự")
-    @Column(name = "Description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "Description", columnDefinition = "TEXT")
     private String description;
 
     @Size(max = 500, message = "URL ảnh không được quá 500 ký tự")

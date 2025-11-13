@@ -24,7 +24,7 @@ public class Message {
     @JoinColumn(name = "SenderID", nullable = false)
     private User sender;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String attachmentURL;

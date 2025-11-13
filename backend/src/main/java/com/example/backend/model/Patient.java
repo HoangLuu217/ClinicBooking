@@ -29,7 +29,7 @@ public class Patient {
     private String healthInsuranceNumber;
 
     // Tiền sử bệnh án
-    @Column(name = "MedicalHistory", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "MedicalHistory", columnDefinition = "TEXT")
     private String medicalHistory;
 
     // Ngày tạo hồ sơ

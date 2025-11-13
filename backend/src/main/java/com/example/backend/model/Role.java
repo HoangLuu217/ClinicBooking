@@ -51,7 +51,7 @@ public class Role {
      * Mô tả về vai trò
      */
     @Size(max = 255, message = "Mô tả không được quá 255 ký tự")
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     /**

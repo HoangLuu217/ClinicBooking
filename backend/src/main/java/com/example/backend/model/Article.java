@@ -25,10 +25,10 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long articleId;
 
-        @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
+        @Column(nullable = false, columnDefinition = "TEXT")
     private String title;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String imageUrl;

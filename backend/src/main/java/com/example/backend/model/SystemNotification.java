@@ -42,7 +42,7 @@ public class SystemNotification {
     private String title;
 
     @NotBlank(message = "Nội dung không được để trống")
-    @Column(name = "Message", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "Message", nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @Size(max = 50, message = "Loại thông báo không được quá 50 ký tự")

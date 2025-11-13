@@ -28,9 +28,9 @@ public class MedicalRecord {
     @JoinColumn(name = "AppointmentID", nullable = false)
     private Appointment appointment;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String diagnosis;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String advice;
 
     private LocalDateTime createdAt;

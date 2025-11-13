@@ -52,10 +52,10 @@ public class ClinicalReferral {
     @JsonIgnoreProperties({"referrals", "clinicalReferrals", "prescriptions", "appointments", "schedules", "reviews", "conversations", "patients", "department", "user"})
     private Doctor performedByDoctor;
 
-    @Column(name = "notes", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
-    @Column(name = "result_text", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "result_text", columnDefinition = "TEXT")
     private String resultText;
 
     @Column(name = "result_file_url", length = 500)

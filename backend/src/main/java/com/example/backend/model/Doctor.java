@@ -28,26 +28,26 @@ public class Doctor {
     @JoinColumn(name = "DepartmentID", nullable = false)
     private Department department;
 
-    @Column(name = "Specialty", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "Specialty", columnDefinition = "TEXT")
     private String specialty;
     
-    @Column(name = "Bio", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "Bio", columnDefinition = "TEXT")
     private String bio;
 
     // Thêm các trường mới từ form
-    @Column(name = "Degree", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "Degree", columnDefinition = "TEXT")
     private String degree; // Bằng cấp
 
-    @Column(name = "WorkExperience", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "WorkExperience", columnDefinition = "TEXT")
     private String workExperience; // Kinh nghiệm làm việc
 
-    @Column(name = "WorkingHours", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "WorkingHours", columnDefinition = "TEXT")
     private String workingHours; // Giờ làm việc
 
-    @Column(name = "PracticeCertificateNumber", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "PracticeCertificateNumber", columnDefinition = "TEXT")
     private String practiceCertificateNumber; // Số chứng chỉ hành nghề
 
-    @Column(name = "CitizenId", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "CitizenId", columnDefinition = "TEXT")
     private String citizenId; // Số CCCD/CMND
 
     @Column(name = "CreatedAt")

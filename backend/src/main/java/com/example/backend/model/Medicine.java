@@ -29,7 +29,7 @@ public class Medicine {
 
     private String strength;
     private BigDecimal unitPrice;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String note;
 
     @OneToMany(mappedBy = "medicine")
