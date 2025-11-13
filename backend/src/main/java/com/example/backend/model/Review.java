@@ -29,10 +29,10 @@ public class Review {
     private Appointment appointment;
 
     private Integer rating;
-    @Column(columnDefinition = "NVARCHAR(255)")
+    @Column(columnDefinition = "VARCHAR(255)")
     private String comment;
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "NVARCHAR(20) DEFAULT 'ACTIVE'")
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private String status = "ACTIVE";
 }

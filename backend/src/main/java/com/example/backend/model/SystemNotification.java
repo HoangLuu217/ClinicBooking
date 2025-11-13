@@ -38,7 +38,7 @@ public class SystemNotification {
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 255, message = "Tiêu đề không được quá 255 ký tự")
-    @Column(name = "Title", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(name = "Title", nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
 
     @NotBlank(message = "Nội dung không được để trống")
@@ -46,7 +46,7 @@ public class SystemNotification {
     private String message;
 
     @Size(max = 50, message = "Loại thông báo không được quá 50 ký tự")
-    @Column(name = "Type", columnDefinition = "NVARCHAR(50)")
+    @Column(name = "Type", columnDefinition = "VARCHAR(50)")
     private String type = "general";
 
     @Column(name = "IsRead", nullable = false, columnDefinition = "BIT DEFAULT 0")

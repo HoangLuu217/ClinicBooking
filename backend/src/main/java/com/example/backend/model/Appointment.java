@@ -47,7 +47,7 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    @Column(columnDefinition = "NVARCHAR(30) DEFAULT 'Scheduled'")
+    @Column(columnDefinition = "VARCHAR(30) DEFAULT 'Scheduled'")
     private String status = "Scheduled";
 
     private String notes;

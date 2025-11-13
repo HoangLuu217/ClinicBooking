@@ -30,7 +30,7 @@ public class DoctorSchedule {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @Column(columnDefinition = "NVARCHAR(20) DEFAULT 'Available'")
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'Available'")
     private String status = "Available";
 
     private String notes;

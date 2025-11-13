@@ -40,7 +40,7 @@ public class Article {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "NVARCHAR(20) DEFAULT 'ACTIVE'")
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private String status = "ACTIVE";
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
