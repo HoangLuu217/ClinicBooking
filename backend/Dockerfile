@@ -10,6 +10,9 @@ RUN mvn dependency:go-offline -B
 # Copy source code
 COPY src ./src
 
+# Copy entrypoint script
+COPY entrypoint.sh ./entrypoint.sh
+
 # Build the application
 RUN mvn clean package -DskipTests -B
 
@@ -21,9 +24,13 @@ WORKDIR /app
 # Copy the JAR from build stage
 COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
+# Copy entrypoint script from build stage
+COPY --from=build /app/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Expose port
 EXPOSE 8080
 
 # Run the application with memory settings
-ENTRYPOINT ["java", "-Xmx512m", "-Xms256m", "-XX:+UseContainerSupport", "-jar", "app.jar"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 
