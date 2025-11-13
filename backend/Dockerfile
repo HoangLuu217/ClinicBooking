@@ -24,6 +24,6 @@ COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 # Expose port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the application with memory settings
+ENTRYPOINT ["java", "-Xmx512m", "-Xms256m", "-XX:+UseContainerSupport", "-jar", "app.jar"]
 

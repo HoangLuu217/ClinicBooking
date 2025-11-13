@@ -4,6 +4,13 @@ spring:
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:123}
     driver-class-name: ${DB_DRIVER:com.microsoft.sqlserver.jdbc.SQLServerDriver}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
 
   jpa:
     hibernate:
@@ -24,6 +31,11 @@ spring:
           batch_size: 10
         order_inserts: true
         order_updates: true
+        temp:
+          use_jdbc_metadata_defaults: false
+  sql:
+    init:
+      mode: never
 
   # Email Configuration
   mail:
