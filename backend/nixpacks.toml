@@ -1,8 +1,11 @@
 [phases.setup]
 nixPkgs = ["maven", "jdk21"]
 
+[phases.install]
+cmds = ["mvn dependency:go-offline"]
+
 [phases.build]
-cmds = ["mvn clean package -DskipTests"]
+cmds = ["mvn clean package -DskipTests -X"]
 
 [start]
 cmd = "java -jar target/backend-0.0.1-SNAPSHOT.jar"
