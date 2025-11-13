@@ -24,7 +24,8 @@ const UserSelector = ({ show, onHide, onSelect, departments }) => {
     try {
       setLoading(true);
       // Lấy tất cả users có role Doctor (roleId = 2)
-      const response = await fetch('http://localhost:8080/api/users/role/2/with-roles-info', {
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
+      const response = await fetch(`${API_BASE_URL}/api/users/role/2/with-roles-info`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

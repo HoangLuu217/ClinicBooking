@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://api.hoangluu.id.vn";
 
 const Home = () => {
   const [doctors, setDoctors] = useState([]);

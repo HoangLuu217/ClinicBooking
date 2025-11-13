@@ -5,7 +5,7 @@ import doctorApi from "../../api/doctorApi";
 import reviewApi from "../../api/reviewApi";
 
 // Thêm hằng số base URL (sửa theo backend của bạn nếu khác)
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://api.hoangluu.id.vn";
 
 export default function PatientAppointmentBooking() {
   const navigate = useNavigate();

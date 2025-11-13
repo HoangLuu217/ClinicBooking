@@ -134,7 +134,7 @@ const DoctorDetail = () => {
                 <div className="flex-shrink-0">
                   {doctor.user?.avatarUrl ? (
                     <img
-                      src={doctor.user.avatarUrl.startsWith('http') ? doctor.user.avatarUrl : `http://localhost:8080${doctor.user.avatarUrl}`}
+                      src={doctor.user.avatarUrl.startsWith('http') ? doctor.user.avatarUrl : `${process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn'}${doctor.user.avatarUrl}`}
                       alt={doctorName}
                       className="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow"
                       onError={e => { e.target.onerror = null; e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(doctorName); }}

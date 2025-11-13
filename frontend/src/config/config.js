@@ -7,8 +7,8 @@ const config = {
   // Backend API Configuration
   API: {
     // Base URL for backend API
-    //'http://localhost:8080' or 'https://m3qdgtht-8080.asse.devtunnels.ms'
-    BASE_URL: 'http://localhost:8080',
+    // Use environment variable or default to production URL
+    BASE_URL: process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn',
     
     // API endpoints
     ENDPOINTS: {

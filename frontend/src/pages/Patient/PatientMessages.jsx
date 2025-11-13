@@ -178,7 +178,7 @@ function PatientMessages() {
   }, []);
 
   // Chuẩn hoá URL ảnh đính kèm: nếu backend trả path tương đối (/uploads/..)
-  // thì thêm origin http://localhost:8080, còn nếu đã absolute thì giữ nguyên
+  // thì thêm origin từ API_BASE_URL, còn nếu đã absolute thì giữ nguyên
   const resolveAttachmentUrl = useCallback((url) => {
     if (!url) return url;
     try {

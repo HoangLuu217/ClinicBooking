@@ -172,8 +172,9 @@ const SpecialtyDoctors = () => {
               {/* Specialties Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 {departments.filter(dept => dept.status !== 'CLOSED').slice(0, 12).map((dept) => {
+                  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
                   const imageUrl = dept.imageUrl 
-                    ? `http://localhost:8080${dept.imageUrl}` 
+                    ? `${API_BASE_URL}${dept.imageUrl}` 
                     : null;
                   
                   return (

@@ -161,7 +161,8 @@ const DepartmentsManagement = () => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch('http://localhost:8080/api/files/upload', {
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
+      const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
         method: 'POST',
         body: formData
       });
@@ -227,7 +228,8 @@ const DepartmentsManagement = () => {
         console.log(key, value);
       }
       
-      const response = await fetch(`http://localhost:8080/api/departments/${departmentId}/upload-image`, {
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
+      const response = await fetch(`${API_BASE_URL}/api/departments/${departmentId}/upload-image`, {
         method: 'POST',
         body: formData
       });
@@ -587,7 +589,7 @@ const DepartmentsManagement = () => {
                   <td>
                     {department.imageUrl && department.imageUrl.trim() !== '' ? (
                       <img 
-                        src={`http://localhost:8080${department.imageUrl.startsWith('/') ? department.imageUrl : '/' + department.imageUrl}`} 
+                        src={`${process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn'}${department.imageUrl.startsWith('/') ? department.imageUrl : '/' + department.imageUrl}`} 
                         alt={department.departmentName}
                         style={{ 
                           width: '50px', 

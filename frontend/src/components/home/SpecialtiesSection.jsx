@@ -90,8 +90,9 @@ export default function SpecialtiesSection() {
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {displayedDepartments.map((department) => {
             // Use imageUrl from database
+            const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
             const imageUrl = department.imageUrl 
-              ? `http://localhost:8080${department.imageUrl}` 
+              ? `${API_BASE_URL}${department.imageUrl}` 
               : null;
             return (
               <div

@@ -701,8 +701,9 @@ const PatientDashboard = () => {
                             
                             // Check if user has avatar
                             if (user?.avatarUrl) {
+                              const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
                               let avatarUrl = user.avatarUrl.startsWith('/uploads/') ? 
-                                `http://localhost:8080${user.avatarUrl}` : 
+                                `${API_BASE_URL}${user.avatarUrl}` : 
                                 user.avatarUrl;
                               
                               // Add cache busting timestamp
@@ -1640,8 +1641,9 @@ const PatientDashboard = () => {
                   {user?.avatarUrl ? (
                     <img 
                       src={(() => {
+                        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
                         let avatarUrl = user.avatarUrl.startsWith('/uploads/') ? 
-                          `http://localhost:8080${user.avatarUrl}` : 
+                          `${API_BASE_URL}${user.avatarUrl}` : 
                           user.avatarUrl;
                         // Add cache busting timestamp
                         const separator = avatarUrl.includes('?') ? '&' : '?';
