@@ -49,7 +49,7 @@ public class SystemNotification {
     @Column(name = "Type", columnDefinition = "VARCHAR(50)")
     private String type = "general";
 
-    @Column(name = "IsRead", nullable = false, columnDefinition = "BIT DEFAULT 0")
+    @Column(name = "IsRead", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isRead = false;
 
     @Column(name = "CreatedAt", updatable = false)
