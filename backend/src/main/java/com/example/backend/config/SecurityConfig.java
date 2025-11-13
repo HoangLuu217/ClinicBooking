@@ -69,7 +69,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        
+        // Lấy frontend URL từ environment variable
+        String frontendUrl = System.getenv("FRONTEND_URL");
+        if (frontendUrl != null && !frontendUrl.isEmpty()) {
+            configuration.setAllowedOrigins(Arrays.asList(
+                frontendUrl,
+                "https://app.hoangluu.id.vn",
+                "https://www.hoangluu.id.vn",
+                "https://hoangluu.id.vn"
+            ));
+        } else {
+            // Fallback cho development
+            configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        }
+        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
