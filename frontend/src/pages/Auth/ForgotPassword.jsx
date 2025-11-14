@@ -16,7 +16,10 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const res = await axiosClient.post('/auth/send-otp', { email });
+      // Tăng timeout riêng cho request gửi email (SMTP có thể mất thời gian)
+      const res = await axiosClient.post('/auth/send-otp', { email }, {
+        timeout: 60000 // 60 giây cho request gửi email
+      });
       if (res.data?.success) {
         setSuccess(true);
         // Save email to localStorage to use in reset password page

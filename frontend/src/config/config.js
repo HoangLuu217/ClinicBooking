@@ -63,7 +63,8 @@ const config = {
     HOME_ARTICLES_SIZE: 8,
     
     // Timeout settings
-    REQUEST_TIMEOUT: 30000,
+    // Tăng timeout lên 60 giây cho các request gửi email (SMTP có thể mất thời gian)
+    REQUEST_TIMEOUT: 60000, // 60 giây
     
     // Pagination settings
     PAGINATION: {
