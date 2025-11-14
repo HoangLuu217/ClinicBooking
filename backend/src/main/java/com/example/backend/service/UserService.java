@@ -455,10 +455,16 @@ public class UserService {
      */
     public String uploadAvatar(Long userId, MultipartFile file) {
         try {
+            System.out.println("=== UPLOAD AVATAR START ===");
+            System.out.println("User ID: " + userId);
+            System.out.println("File: " + (file != null ? file.getOriginalFilename() : "null"));
+            System.out.println("File size: " + (file != null ? file.getSize() : 0) + " bytes");
+            
             User user = getUserByIdWithRole(userId);
+            System.out.println("User found: " + user.getEmail());
             
             // Validate file
-            if (file.isEmpty()) {
+            if (file == null || file.isEmpty()) {
                 throw new RuntimeException("File không được để trống");
             }
             
@@ -473,33 +479,41 @@ public class UserService {
                 throw new RuntimeException("File phải là ảnh");
             }
             
+            System.out.println("File validation passed");
+            
             // Delete old avatar from Cloudinary if exists
             String oldAvatarUrl = user.getAvatarUrl();
             if (oldAvatarUrl != null && oldAvatarUrl.contains("cloudinary.com")) {
                 try {
+                    System.out.println("Deleting old avatar: " + oldAvatarUrl);
                     cloudinaryService.deleteImage(oldAvatarUrl);
-                    System.out.println("🗑️ Deleted old avatar from Cloudinary: " + oldAvatarUrl);
+                    System.out.println("✅ Deleted old avatar from Cloudinary");
                 } catch (Exception e) {
                     System.err.println("⚠️ Could not delete old avatar from Cloudinary: " + e.getMessage());
+                    // Continue even if delete fails
                 }
             }
             
             // Upload to Cloudinary
+            System.out.println("Uploading to Cloudinary...");
             String folder = "clinic/users";
             String avatarUrl = cloudinaryService.uploadImage(file, folder);
-            
             System.out.println("✅ Avatar uploaded to Cloudinary: " + avatarUrl);
             
             // Update user avatar
+            System.out.println("Updating user avatar in database...");
             user.setAvatarUrl(avatarUrl);
             userRepository.save(user);
             
             System.out.println("✅ Avatar updated successfully for user: " + userId);
+            System.out.println("=== UPLOAD AVATAR END ===");
             return avatarUrl;
             
         } catch (Exception e) {
             System.err.println("❌ Error uploading avatar: " + e.getMessage());
-            throw new RuntimeException("Lỗi khi upload ảnh: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi upload ảnh: " + e.getMessage() + " | Cause: " + 
+                    (e.getCause() != null ? e.getCause().getMessage() : "N/A"), e);
         }
     }
     

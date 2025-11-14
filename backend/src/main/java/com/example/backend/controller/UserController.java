@@ -19,6 +19,7 @@ import com.example.backend.service.PatientService;
 import com.example.backend.dto.UserWithPatientInfoDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST Controller cho User entity
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -316,13 +318,24 @@ public class UserController {
      * POST /api/users/{userId}/upload-avatar
      */
     @PostMapping("/{userId}/upload-avatar")
-    public ResponseEntity<String> uploadAvatar(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, Object>> uploadAvatar(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
         try {
+            log.info("Upload avatar request - userId: {}, filename: {}, size: {} bytes", 
+                    userId, file.getOriginalFilename(), file.getSize());
+            
             String avatarUrl = userService.uploadAvatar(userId, file);
-            return ResponseEntity.ok(avatarUrl);
+            
+            response.put("success", true);
+            response.put("url", avatarUrl);
+            response.put("message", "Upload avatar thành công");
+            return ResponseEntity.ok(response);
+            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Lỗi khi upload ảnh: " + e.getMessage());
+            log.error("Error uploading avatar for user {}: {}", userId, e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Lỗi khi upload ảnh: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
