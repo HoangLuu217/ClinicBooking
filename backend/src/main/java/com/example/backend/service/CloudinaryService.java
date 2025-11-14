@@ -19,9 +19,20 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
 
     public CloudinaryService(
-            @Value("${cloudinary.cloud-name}") String cloudName,
-            @Value("${cloudinary.api-key}") String apiKey,
-            @Value("${cloudinary.api-secret}") String apiSecret) {
+            @Value("${cloudinary.cloud-name:}") String cloudName,
+            @Value("${cloudinary.api-key:}") String apiKey,
+            @Value("${cloudinary.api-secret:}") String apiSecret) {
+        
+        // Validate credentials
+        if (cloudName == null || cloudName.isEmpty()) {
+            log.error("CLOUDINARY_CLOUD_NAME chưa được set!");
+        }
+        if (apiKey == null || apiKey.isEmpty()) {
+            log.error("CLOUDINARY_API_KEY chưa được set!");
+        }
+        if (apiSecret == null || apiSecret.isEmpty()) {
+            log.error("CLOUDINARY_API_SECRET chưa được set!");
+        }
         
         Map<String, String> config = new HashMap<>();
         config.put("cloud_name", cloudName);
@@ -36,7 +47,8 @@ public class CloudinaryService {
             // Tạo public_id unique
             String publicId = folder + "/" + UUID.randomUUID().toString();
             
-            log.info("Uploading image to Cloudinary - folder: {}, public_id: {}", folder, publicId);
+            log.info("Uploading image to Cloudinary - folder: {}, public_id: {}, size: {} bytes", 
+                    folder, publicId, file.getSize());
             
             // Upload lên Cloudinary
             Map<?, ?> uploadResult = cloudinary.uploader().upload(
@@ -55,9 +67,19 @@ public class CloudinaryService {
             log.info("Upload thành công: {}", secureUrl);
             return secureUrl;
             
-        } catch (IOException e) {
-            log.error("Lỗi khi upload lên Cloudinary: {}", e.getMessage(), e);
-            throw e;
+        } catch (Exception e) {
+            // Log chi tiết lỗi
+            String errorMsg = e.getMessage();
+            log.error("Lỗi khi upload lên Cloudinary: {}", errorMsg, e);
+            
+            // Kiểm tra nếu là lỗi 403 (Forbidden)
+            if (errorMsg != null && (errorMsg.contains("403") || errorMsg.contains("Forbidden") || 
+                errorMsg.contains("Invalid API Key") || errorMsg.contains("Invalid signature"))) {
+                log.error("Lỗi 403: Có thể do API credentials không đúng hoặc chưa được set trong environment variables");
+                log.error("Kiểm tra: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET");
+            }
+            
+            throw new IOException("Lỗi khi upload lên Cloudinary: " + errorMsg, e);
         }
     }
 
