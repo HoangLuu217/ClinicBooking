@@ -38,9 +38,10 @@ spring:
       mode: never
 
   # Email Configuration
+  # Lưu ý: Railway có thể block port 587, thử port 465 (SSL) nếu 587 không hoạt động
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
+    port: ${MAIL_PORT:465}  # Thử port 465 (SSL) thay vì 587 (STARTTLS) nếu Railway block
     username: ${MAIL_USERNAME:tungdtde180564@fpt.edu.vn}
     password: ${MAIL_PASSWORD:uoet gajv wcsr slqb}
     properties:
