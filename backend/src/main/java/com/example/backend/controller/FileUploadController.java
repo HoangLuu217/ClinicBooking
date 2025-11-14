@@ -1,7 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.service.CloudinaryService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +10,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/files")
 @CrossOrigin(origins = "*")
-@RequiredArgsConstructor
 @Slf4j
 public class FileUploadController {
-
-    private final CloudinaryService cloudinaryService;
 
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -65,26 +65,43 @@ public class FileUploadController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Xác định folder trên Cloudinary
-            String folder = "clinic";
+            // Xác định subfolder trong uploads/
+            String subfolder = "";
             if (articleId != null) {
-                folder = "clinic/articles";
+                subfolder = "articles";
             } else if (doctorId != null) {
-                folder = "clinic/doctors";
+                subfolder = "doctors";
             } else if (userId != null) {
-                folder = "clinic/users";
+                subfolder = "users";
             } else if (departmentId != null) {
-                folder = "clinic/departments";
+                subfolder = "departments";
                 log.info("Uploading department image for ID: {}", departmentId);
             }
 
-            // Upload lên Cloudinary
-            String fileUrl = cloudinaryService.uploadImage(file, folder);
+            // Tạo tên file unique
+            String extension = getFileExtension(originalFilename);
+            String uniqueFilename = UUID.randomUUID().toString() + extension;
+            
+            // Tạo thư mục uploads nếu chưa có
+            String uploadDir = "uploads/" + (subfolder.isEmpty() ? "" : subfolder + "/");
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Lưu file
+            Path filePath = uploadPath.resolve(uniqueFilename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Tạo URL để trả về
+            String fileUrl = "/uploads/" + (subfolder.isEmpty() ? "" : subfolder + "/") + uniqueFilename;
+
+            log.info("File uploaded successfully: {}", fileUrl);
 
             response.put("success", true);
             response.put("message", "Upload thành công");
             response.put("url", fileUrl);
-            response.put("filename", originalFilename);
+            response.put("filename", uniqueFilename);
             response.put("originalName", originalFilename);
             response.put("size", file.getSize());
 
