@@ -10,7 +10,7 @@ import { Eye, EyeOff } from 'lucide-react';
 // Đổi thành true để bật lại reCAPTCHA
 // Chỉ cần sửa dòng này!
 // ============================================
-const ENABLE_RECAPTCHA = false;
+const ENABLE_RECAPTCHA = true;
 
 export default function Login() {
   const [email, setEmail] = useState('');
