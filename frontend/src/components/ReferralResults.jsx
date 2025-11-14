@@ -2,31 +2,21 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 
 const ReferralResults = ({ referrals, loading }) => {
-  console.log('🔍 ReferralResults component received:', referrals);
-  console.log('🔍 referrals type:', typeof referrals);
-  console.log('🔍 referrals is array?', Array.isArray(referrals));
-  
   // Ensure referrals is an array
   let referralList = [];
   
   if (Array.isArray(referrals)) {
     referralList = referrals;
   } else if (typeof referrals === 'string') {
-    console.warn('⚠️ referrals is a string, trying to parse...');
     try {
       const parsed = JSON.parse(referrals);
       referralList = Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      console.error('❌ Failed to parse referrals string:', e);
       referralList = [];
     }
   } else if (referrals && typeof referrals === 'object') {
-    console.warn('⚠️ referrals is an object, wrapping in array');
     referralList = [referrals];
   }
-  
-  console.log('✅ Final referralList:', referralList);
-  console.log('✅ referralList.length:', referralList.length);
   
   if (!referralList || referralList.length === 0) return null;
 

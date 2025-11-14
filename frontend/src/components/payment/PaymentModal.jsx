@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, CreditCard, Smartphone, AlertCircle, CheckCircle, Clock, ExternalLink, Loader2 } from 'lucide-react';
+import { X, CreditCard, Smartphone, AlertCircle, CheckCircle, Clock, ExternalLink, Loader2, FileText } from 'lucide-react';
 import paymentApi from '../../api/paymentApi';
+import PaymentPdf from './PaymentPdf';
+import html2pdf from 'html2pdf.js';
 
 const PaymentModal = ({ 
   isOpen, 
@@ -13,6 +15,7 @@ const PaymentModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState('PENDING');
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
   useEffect(() => {
     if (isOpen && appointmentData) {
@@ -160,6 +163,22 @@ const PaymentModal = ({
     }
   };
 
+  // PDF Preview & Export
+  const handleShowPdfModal = () => setShowPdfModal(true);
+  const handleClosePdfModal = () => setShowPdfModal(false);
+  const handleExportPdf = () => {
+    const element = document.getElementById('payment-pdf-preview');
+    if (element) {
+      html2pdf().set({
+        margin: 10,
+        filename: `phieu-thanh-toan-${payment?.paymentId || 'payment'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      }).from(element).save();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -266,6 +285,21 @@ const PaymentModal = ({
                   <p className="text-sm text-green-700">
                     Lịch hẹn của bạn đã được xác nhận. Bạn sẽ nhận được thông báo qua email.
                   </p>
+                  {/* PDF Preview & Export Button */}
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={handleShowPdfModal}
+                      className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                    >
+                      <FileText className="h-4 w-4" /> Xem phiếu thanh toán
+                    </button>
+                    <button
+                      onClick={handleExportPdf}
+                      className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                    >
+                      <FileText className="h-4 w-4" /> Xuất PDF
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -293,6 +327,23 @@ const PaymentModal = ({
             </div>
           )}
         </div>
+
+        {/* PDF Modal */}
+        {showPdfModal && payment && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative">
+              <button
+                onClick={handleClosePdfModal}
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div id="payment-pdf-preview">
+                <PaymentPdf payment={payment} />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex gap-3 p-6 border-t">

@@ -101,12 +101,12 @@ const Home = () => {
       <section className="mb-12">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="flex-1 flex flex-col items-center">
+              <h2 className="text-2xl font-bold text-gray-900 text-center">
                 {showAllDoctors ? 'Tất cả bác sĩ' : 'Bác sĩ tiêu biểu'}
               </h2>
               {!showAllDoctors && (
-                <p className="text-gray-600 text-sm mt-1">
+                <p className="text-gray-600 text-sm mt-1 text-center">
                   Chọn từ {featuredDoctors.length} bác sĩ được đánh giá cao nhất
                 </p>
               )}
@@ -128,7 +128,7 @@ const Home = () => {
                 <span className="ml-3 text-gray-600">Đang tải danh sách bác sĩ...</span>
               </div>
             ) : (showAllDoctors ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 justify-center">
                 {doctors.map((doctor) => (
                   <div key={doctor.id} className="bg-white rounded-2xl shadow-lg p-7 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group border border-blue-50 relative">
                     <div className="flex flex-col items-center">

@@ -14,3 +14,4 @@ tests/selenium/screenshots/
 /tests
 /backend/uploads
 /uploads
+/node_modules

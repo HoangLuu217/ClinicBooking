@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -59,7 +58,7 @@ public class SystemNotification {
     @Column(name = "ReadAt")
     private LocalDateTime readAt;
 
-    @Column(name = "EmailSent")
+    @Column(name = "EmailSent", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean emailSent = false;
 
     @Column(name = "EmailSentAt")

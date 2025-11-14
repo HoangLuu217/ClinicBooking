@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, Container, Row, Col, Button, Table, Modal, Form, Badge, Alert } from "react-bootstrap";
 import { FileText, Eye, User, Calendar, Search, Trash2 } from "lucide-react";
 import prescriptionApi, { exportPrescriptionPdf } from "../../api/prescriptionApi";
+import appointmentApi from "../../api/appointmentApi";
+import userApi from '../../api/userApi';
 import { toast } from "../../utils/toast";
+import PrescriptionPdf from '../../components/admin/PrescriptionPdf';
+import html2pdf from 'html2pdf.js';
 
 const PrescriptionsManagement = () => {
   const [prescriptions, setPrescriptions] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -17,9 +22,12 @@ const PrescriptionsManagement = () => {
   const [editForm, setEditForm] = useState({ id: null, diagnosis: "" });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({ patientId: "", appointmentId: "", diagnosis: "", items: [{ medicineId: "", quantity: 1, dosage: "" }] });
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfPrescription, setPdfPrescription] = useState(null);
 
   useEffect(() => {
     loadPrescriptions();
+    loadAppointments();
   }, []);
 
   const loadPrescriptions = async () => {
@@ -59,6 +67,31 @@ const PrescriptionsManagement = () => {
     }
   };
 
+  const loadAppointments = async () => {
+    try {
+      // Get all unique patient IDs from prescriptions first
+      const prescriptionsRes = await prescriptionApi.getAllPrescriptions();
+      const patientIds = [...new Set((prescriptionsRes.data || []).map(p => p.patientId).filter(Boolean))];
+      
+      // Fetch appointments for all patients
+      const allAppointments = [];
+      for (const patientId of patientIds) {
+        try {
+          const response = await appointmentApi.getAppointmentsByPatient(patientId);
+          if (response.data) {
+            allAppointments.push(...(Array.isArray(response.data) ? response.data : [response.data]));
+          }
+        } catch (err) {
+          console.log(`Could not fetch appointments for patient ${patientId}`);
+        }
+      }
+      setAppointments(allAppointments);
+    } catch (error) {
+      console.error('Đỗi lấy danh sách lịch hẹn:', error);
+      setAppointments([]);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const statusConfig = {
       new: { variant: "primary", text: "Mới" },
@@ -69,11 +102,13 @@ const PrescriptionsManagement = () => {
     return statusConfig[status] || { variant: "secondary", text: "Không xác định" };
   };
 
-  const filteredPrescriptions = prescriptions.filter(prescription =>
-    (prescription.patientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (prescription.prescriptionId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (prescription.diagnosis || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPrescriptions = useMemo(() => {
+    return prescriptions.filter(prescription =>
+      (prescription.patientName || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
+      (prescription.prescriptionId || '').toString().toLowerCase().includes((searchTerm || '').toLowerCase()) ||
+      (prescription.diagnosis || '').toLowerCase().includes((searchTerm || '').toLowerCase())
+    );
+  }, [prescriptions, searchTerm]);
 
   const handleViewPrescription = (prescription) => {
     setSelectedPrescription(prescription);
@@ -187,157 +222,174 @@ const PrescriptionsManagement = () => {
     downloadBlob(res.data, `prescription-${id}.pdf`);
   };
 
+  const handleShowPdf = async (prescription) => {
+    let patientInfo = {};
+    try {
+      const userRes = await userApi.getUserById(prescription.patientId);
+      patientInfo = userRes.data || {};
+      console.log('PDF Patient Info from users:', patientInfo);
+    } catch (e) {
+      patientInfo = appointments.find(a => a.patientId === prescription.patientId) || {};
+      if (Array.isArray(patientInfo)) patientInfo = patientInfo[0] || {};
+      console.log('PDF Patient Info from appointments:', patientInfo);
+    }
+    const pdfData = {
+      ...prescription,
+      patientDob: patientInfo.dateOfBirth || '',
+      patientGender: patientInfo.gender || '',
+      patientAddress: patientInfo.address || '',
+      patientName: (patientInfo.fullName || `${patientInfo.firstName || ''} ${patientInfo.lastName || ''}`.trim()) || prescription.patientName || '',
+    };
+    console.log('PDF Data for PrescriptionPdf:', pdfData);
+    setPdfPrescription(pdfData);
+    setShowPdfModal(true);
+  };
+
+  const handleClosePdf = () => {
+    setShowPdfModal(false);
+    setPdfPrescription(null);
+  };
+
+  const handleExportPdfFile = () => {
+    const element = document.getElementById('pdf-preview-content');
+    if (element) {
+      html2pdf().set({
+        margin: 10,
+        filename: `prescription-${pdfPrescription.prescriptionId}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).from(element).save();
+    }
+  };
+
   return (
     <Container fluid className="py-4">
+      <style>{`
+        .stats-card {
+          border: none;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+        
+        .stats-card:hover {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+          transform: translateY(-2px);
+        }
+        
+        .stats-card .h4 {
+          font-weight: 700;
+          color: #5a5c69;
+        }
+        
+        .stats-card:hover .h4 {
+          color: #3a3b45;
+        }
+        
+        .stats-card .text-muted {
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .stats-card small {
+          font-size: 0.75rem;
+          opacity: 0.7;
+        }
+        
+        .stats-card i {
+          opacity: 0.8;
+          transition: opacity 0.3s ease;
+        }
+        
+        .stats-card:hover i {
+          opacity: 1;
+        }
+      `}</style>
+
       {/* Header */}
-      <Row className="mb-4">
-        <Col>
-          <Card className="shadow-sm border-0" style={{borderRadius: '16px'}}>
-            <Card.Body className="p-4">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <div className="d-flex align-items-center mb-2">
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: '16px'
-                    }}>
-                      <FileText size={24} color="white" />
-                    </div>
-                    <div>
-                      <h2 className="mb-0" style={{fontSize: '1.75rem', fontWeight: 700, color: '#1f2937'}}>
-                        Quản Lý Đơn Thuốc
-                      </h2>
-                      <p className="text-muted mb-0" style={{fontSize: '0.9rem'}}>Xem và quản lý các đơn thuốc đã được kê</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản Lý Đơn Thuốc</h2>
+      </div>
 
       {/* Stats Cards */}
-      <Row className="mb-4 g-3">
-        <Col md={3}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.9}}>
-                <FileText size={28} color="rgba(255,255,255,0.95)" />
+      <div className="row g-3 mb-4">
+        <div className="col-md-3">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Tổng Đơn Thuốc</div>
+                  <div className="h4 mb-0">{prescriptions.length}</div>
+                </div>
+                <i className="bi bi-file-text fs-2 text-primary"></i>
               </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Tổng Đơn Thuốc</h6>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Đã Hoàn Thành</div>
+                  <div className="h4 mb-0">{appointments.filter(a => a.status && a.status.toLowerCase() === 'completed').length}</div>
+                </div>
+                <i className="bi bi-check-circle fs-2 text-success"></i>
               </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{prescriptions.length}</h2>
-              <small style={{opacity: 0.95}}>Đơn thuốc trong hệ thống</small>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.95, fontSize: 20}}>
-                <span role="img" aria-label="check">✅</span>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Chờ Xử Lý</div>
+                  <div className="h4 mb-0">{prescriptions.filter(p => p.status === 'pending').length}</div>
+                </div>
+                <i className="bi bi-hourglass-split fs-2 text-warning"></i>
               </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Đã Hoàn Thành</h6>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Tổng Hóa Đơn</div>
+                  <div className="h4 mb-0">{prescriptions.reduce((sum, p) => sum + (p.totalAmount || 0), 0).toLocaleString('vi-VN')} ₫</div>
+                </div>
+                <i className="bi bi-cash-stack fs-2 text-success"></i>
               </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{prescriptions.filter(p => p.status === 'completed').length}</h2>
-              <small style={{opacity: 0.95}}>Đơn đã xử lý xong</small>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.95, fontSize: 20}}>
-                <span role="img" aria-label="clock">⏳</span>
-              </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Chờ Xử Lý</h6>
-              </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{prescriptions.filter(p => p.status === 'pending').length}</h2>
-              <small style={{opacity: 0.95}}>Đơn đang chờ duyệt</small>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.95, fontSize: 20}}>
-                <span role="img" aria-label="new">✨</span>
-              </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Mới</h6>
-              </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{prescriptions.filter(p => p.status === 'new').length}</h2>
-              <small style={{opacity: 0.95}}>Đơn mới tạo</small>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Search */}
-      <Row className="mb-4">
-        <Col md={9}>
-          <div className="position-relative">
-            <Search className="position-absolute" size={20} style={{left: "16px", top: "14px", color: "#9ca3af"}} />
+      <div className="row mb-3">
+        <div className="col-md-12">
+          <div className="input-group">
+            <span className="input-group-text">
+              <Search size={18} />
+            </span>
             <Form.Control
               type="text"
               placeholder="Tìm kiếm theo tên bệnh nhân, mã đơn thuốc, chẩn đoán..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                paddingLeft: "48px",
                 height: '48px',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb',
                 fontSize: '0.95rem'
               }}
             />
           </div>
-        </Col>
-        <Col md={3} className="d-flex align-items-center justify-content-end">
-          <Button 
-            variant="primary" 
-            onClick={() => setShowCreateModal(true)}
-            style={{
-              height: '48px',
-              borderRadius: '12px',
-              paddingLeft: '18px',
-              paddingRight: '18px',
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center'
-            }}
-          >
-            <FileText className="me-2" size={18} />
-            Tạo đơn thuốc
-          </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {/* Prescriptions Table */}
       <Card className="shadow-sm border-0" style={{borderRadius: '16px'}}>
@@ -377,12 +429,7 @@ const PrescriptionsManagement = () => {
                         <strong className="text-primary" style={{fontSize: '0.95rem'}}>{prescription.prescriptionId}</strong>
                       </td>
                       <td>
-                        <div>
-                          <strong style={{fontSize: '0.95rem'}}>{prescription.patientName}</strong>
-                          <div>
-                            <small className="text-muted">{prescription.patientId}</small>
-                          </div>
-                        </div>
+                        <strong style={{fontSize: '0.95rem'}}>{prescription.patientName}</strong>
                       </td>
                       <td>
                         <span style={{fontSize: '0.95rem'}}>{prescription.doctorName}</span>
@@ -435,8 +482,8 @@ const PrescriptionsManagement = () => {
                           <Button
                             variant="outline-secondary"
                             size="sm"
-                            onClick={() => handleExportPrescription(prescription.id)}
-                            title="Xuất PDF"
+                            onClick={() => handleShowPdf(prescription)}
+                            title="Xem PDF"
                             style={{borderRadius: '8px'}}
                           >
                             PDF
@@ -496,9 +543,7 @@ const PrescriptionsManagement = () => {
                     <Badge bg={getStatusBadge(selectedPrescription.status).variant} className="fs-6">
                       {getStatusBadge(selectedPrescription.status).text}
                     </Badge>
-                    <h5 className="text-success mb-0">
-                      Tổng: {(selectedPrescription.totalAmount || 0).toLocaleString('vi-VN')} ₫
-                    </h5>
+                    
                   </div>
                 </Card.Body>
               </Card>
@@ -677,6 +722,24 @@ const PrescriptionsManagement = () => {
           <Button variant="primary" onClick={handleSaveCreate}>Tạo</Button>
         </Modal.Footer>
       </Modal>
+
+      {/* PDF Preview Modal */}
+      {showPdfModal && (
+        <Modal show={showPdfModal} onHide={handleClosePdf} size="lg" centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Xem trước Đơn thuốc PDF</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div id="pdf-preview-content">
+              {pdfPrescription && <PrescriptionPdf prescription={pdfPrescription} />}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClosePdf}>Đóng</Button>
+            <Button variant="primary" onClick={handleExportPdfFile}>Xuất file PDF</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </Container>
   );
 };

@@ -4,9 +4,10 @@
 Backend API cho hệ thống quản lý phòng khám được xây dựng bằng Spring Boot 3.5.6 và Java 21.
 
 ## 🗄️ Database Schema
-- **Database**: SQL Server
-- **Schema**: ClinicBooking
+- **Database**: PostgreSQL (Railway) hoặc SQL Server (Local)
+- **Schema**: Tự động tạo bởi Hibernate
 - **Tables**: Users, Roles, Departments, và các bảng khác theo thiết kế ban đầu
+- **Migration**: Hibernate tự động tạo/update tables (`ddl-auto: update`)
 
 ## 🚀 Cấu trúc Project
 
@@ -143,13 +144,24 @@ backend/
 ## 🔧 Configuration
 
 ### Database Connection
+
+**Mặc định (SQL Server):**
 ```yaml
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=ClinicBooking;encrypt=false
-    username: sa
-    password: 123
+    url: ${DATABASE_URL:jdbc:sqlserver://localhost:1433;databaseName=CLINIC;...}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:123}
+    driver-class-name: ${DB_DRIVER:com.microsoft.sqlserver.jdbc.SQLServerDriver}
 ```
+
+**PostgreSQL (Railway):**
+Set environment variables:
+- `DATABASE_URL`: `jdbc:postgresql://host:port/database?sslmode=require`
+- `DB_DRIVER`: `org.postgresql.Driver`
+- `HIBERNATE_DIALECT`: `org.hibernate.dialect.PostgreSQLDialect`
+
+Xem chi tiết trong `POSTGRESQL_SETUP.md`
 
 ### Server Configuration
 - **Port**: 8080
@@ -159,7 +171,7 @@ spring:
 
 ### Prerequisites
 - Java 21
-- SQL Server
+- Database: PostgreSQL (Railway) hoặc SQL Server (Local)
 - Maven 3.9+
 
 ### Build Commands
@@ -233,6 +245,15 @@ spring:
 - **Java**: 21
 - **Lombok**: Giảm boilerplate code
 - **JPA/Hibernate**: ORM framework
-- **SQL Server Driver**: Database connectivity
+- **PostgreSQL Driver**: Database connectivity (Railway)
+- **SQL Server Driver**: Database connectivity (Local)
 - **Spring Validation**: Input validation
 - **Spring Test**: Testing framework
+
+## 📚 Tài liệu tham khảo
+
+- `POSTGRESQL_SETUP.md` - Hướng dẫn cấu hình PostgreSQL
+- `MODEL_POSTGRESQL_CHECKLIST.md` - Checklist model files cho PostgreSQL
+- `RAILWAY_POSTGRESQL_LOCAL.md` - Kết nối Railway PostgreSQL từ local
+- `LOCAL_SETUP.md` - Hướng dẫn chạy local
+- `HOW_TO_TEST_API.md` - Hướng dẫn test API

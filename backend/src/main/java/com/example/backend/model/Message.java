@@ -29,5 +29,7 @@ public class Message {
 
     private String attachmentURL;
     private LocalDateTime sentAt;
+    
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isRead = false;
 }

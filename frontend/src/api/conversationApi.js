@@ -7,8 +7,19 @@ const conversationApi = {
 
   getConversationWithMessages: (id) => axiosClient.get(`/conversations/${id}/messages`),
 
-  getConversationsByPatient: (patientId) =>
-    axiosClient.get(`/conversations/by-patient?patientId=${patientId}`),
+  getConversationsByPatient: (params = {}) => {
+    const { patientId, patientUserId } =
+      typeof params === "object" && params !== null
+        ? params
+        : { patientId: params };
+    const searchParams = new URLSearchParams();
+    if (patientId) searchParams.append("patientId", patientId);
+    if (patientUserId) searchParams.append("patientUserId", patientUserId);
+    const query = searchParams.toString();
+    return axiosClient.get(
+      `/conversations/by-patient${query ? `?${query}` : ""}`
+    );
+  },
 
   getConversationsByDoctor: (doctorId) =>
     axiosClient.get(`/conversations/by-doctor?doctorId=${doctorId}`),

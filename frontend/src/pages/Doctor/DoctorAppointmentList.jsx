@@ -300,6 +300,39 @@ function DoctorAppointmentList() {
     const bTime = new Date(b.startTime).getTime();
     return aTime - bTime; // Giảm dần (mới nhất lên đầu)
   });
+    .filter((a) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          a.patientName?.toLowerCase().includes(query) ||
+          a.patientEmail?.toLowerCase().includes(query) ||
+          a.patientPhone?.includes(query) ||
+          a.healthInsuranceNumber?.toLowerCase().includes(query)
+        );
+      }
+
+      // Updated filter logic for doctor status management
+      if (activeTab === "upcoming") {
+        return a.status === "Scheduled" || a.status === "Confirmed";
+      }
+      if (activeTab === "completed") {
+        return a.status === "Completed";
+      }
+      if (activeTab === "cancelled") {
+        return (
+          a.status === "Rejected" ||
+          a.status === "Từ chối lịch hẹn" ||
+          a.status === "Canceled"
+        );
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // Sắp xếp theo thời gian gần nhất lên trên cùng
+      const aTime = new Date(a.startTime).getTime();
+      const bTime = new Date(b.startTime).getTime();
+      return aTime - bTime; // Giảm dần (mới nhất lên đầu)
+    });
 
   // Render
   if (loading) {

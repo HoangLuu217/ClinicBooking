@@ -386,6 +386,24 @@ function PatientMessages() {
     }
   }, [patientId, currentUserId, selectedDoctorId, fetchDoctors]);
 
+  useEffect(() => {
+    const totalUnread = doctors.reduce(
+      (sum, doctor) => sum + (Number(doctor?.unreadCount) || 0),
+      0
+    );
+    window.dispatchEvent(
+      new CustomEvent("patientUnreadUpdated", { detail: totalUnread })
+    );
+  }, [doctors]);
+
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("patientUnreadUpdated", { detail: 0 })
+      );
+    };
+  }, []);
+
   // Create conversation for specific doctor if needed
   const createConversationForDoctor = useCallback(async (patientId, doctorId) => {
     const actualPatientId = patientId || currentUserId;

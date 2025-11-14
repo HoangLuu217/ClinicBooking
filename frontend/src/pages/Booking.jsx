@@ -39,6 +39,11 @@ export default function Booking() {
 
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6 mt-6">
+      {/* Featured Doctors Title */}
+      <div className="w-full flex flex-col items-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 text-center">Bác sĩ tiêu biểu</h2>
+        <p className="text-gray-600 text-sm mt-1 text-center">Chọn từ 6 bác sĩ được đánh giá cao nhất</p>
+      </div>
       {/* Doctor Info */}
       <div className="flex items-center gap-6 mb-6">
         <img

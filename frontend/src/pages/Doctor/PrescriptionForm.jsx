@@ -333,28 +333,16 @@ const PrescriptionForm = () => {
   // Load clinical referral results for this appointment
   const loadReferralResults = async (apptId) => {
     if (!apptId) {
-      console.log('⚠️ No appointmentId provided to loadReferralResults');
       return;
     }
     
     try {
       setLoadingReferrals(true);
-      console.log('📊 ========================================');
-      console.log('📊 Loading referral results for appointment:', apptId);
       const response = await referralApi.getReferralsByAppointment(apptId);
-      console.log('✅ API Response:', response);
-      console.log('✅ Response data:', response.data);
-      console.log('✅ Response data type:', typeof response.data);
-      console.log('✅ Is array?', Array.isArray(response.data));
       
       // Ensure it's an array
       const referrals = Array.isArray(response.data) ? response.data : [];
-      console.log('✅ Setting referralResults state with', referrals.length, 'items');
-      if (referrals.length > 0) {
-        console.log('📋 First referral:', referrals[0]);
-      }
       setReferralResults(referrals);
-      console.log('📊 ========================================');
     } catch (error) {
       console.error('❌ Error loading referral results:', error);
       console.error('❌ Error response:', error.response);
@@ -367,43 +355,28 @@ const PrescriptionForm = () => {
   // Load referral results when appointmentId changes
   useEffect(() => {
     const apptId = appointmentId || formData.selectedAppointmentId;
-    console.log('🔍 ========================================');
-    console.log('🔍 useEffect triggered for referral loading');
-    console.log('🔍 appointmentId from URL:', appointmentId);
-    console.log('🔍 selectedAppointmentId from formData:', formData.selectedAppointmentId);
-    console.log('🔍 patientId from formData:', formData.patientId);
-    console.log('🔍 Final apptId to use:', apptId);
-    console.log('🔍 ========================================');
     
     if (apptId) {
-      console.log('✅ Calling loadReferralResults with appointmentId:', apptId);
       loadReferralResults(apptId);
     } else if (formData.patientId) {
       // If no appointmentId but have patientId, try loading by patient
-      console.log('⚠️ No appointmentId, trying to load referrals by patientId:', formData.patientId);
       loadReferralsByPatient(formData.patientId);
-    } else {
-      console.log('⚠️ No appointmentId or patientId available, skipping referral load');
     }
   }, [appointmentId, formData.selectedAppointmentId, formData.patientId]);
 
   // Load referrals by patient ID
   const loadReferralsByPatient = async (patientId) => {
     if (!patientId) {
-      console.log('⚠️ No patientId provided to loadReferralsByPatient');
       return;
     }
     
     try {
       setLoadingReferrals(true);
-      console.log('📊 Loading referrals for patient:', patientId);
       const response = await referralApi.getReferralsByPatient(patientId);
-      console.log('✅ Patient referrals response:', response.data);
       
       const referrals = Array.isArray(response.data) ? response.data : [];
       // Filter only DONE referrals
       const doneReferrals = referrals.filter(r => r.status === 'DONE');
-      console.log('✅ Found', doneReferrals.length, 'completed referrals for patient');
       setReferralResults(doneReferrals);
     } catch (error) {
       console.error('❌ Error loading patient referrals:', error);
@@ -415,12 +388,6 @@ const PrescriptionForm = () => {
 
   // Handle creating clinical referral
   const handleCreateReferral = async () => {
-    console.log('🔍 Starting referral creation...');
-    console.log('🔍 Current formData:', formData);
-    console.log('🔍 Current referralData:', referralData);
-    console.log('🔍 appointmentId from params:', appointmentId);
-    console.log('🔍 appointmentInfo from state:', appointmentInfo);
-
     if (!referralData.toDepartmentId) {
       showNotification('error', 'Thiếu Thông Tin', 'Vui lòng chọn khoa thực hiện');
       return;

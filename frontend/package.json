@@ -12,6 +12,7 @@
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "html2pdf.js": "^0.12.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.545.0",
     "postcss": "^8.5.6",

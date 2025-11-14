@@ -196,119 +196,113 @@ const MedicinesManagement = () => {
 
   return (
     <Container fluid className="py-4">
-      {/* Header */}
-      <Row className="mb-4">
-        <Col>
-          <Card className="shadow-sm border-0" style={{borderRadius: '16px'}}>
-            <Card.Body className="p-4">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <div className="d-flex align-items-center mb-2">
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: '16px'
-                    }}>
-                      <Package size={24} color="white" />
-                    </div>
-                    <div>
-                      <h2 className="mb-0" style={{fontSize: '1.75rem', fontWeight: 700, color: '#1f2937'}}>
-                        Quản Lý Thuốc
-                      </h2>
-                      <p className="text-muted mb-0" style={{fontSize: '0.9rem'}}>Quản lý kho thuốc và thông tin thuốc</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+      <style>{`
+        .stats-card {
+          border: none;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+        
+        .stats-card:hover {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+          transform: translateY(-2px);
+        }
+        
+        .stats-card .h4 {
+          font-weight: 700;
+          color: #5a5c69;
+        }
+        
+        .stats-card:hover .h4 {
+          color: #3a3b45;
+        }
+        
+        .stats-card .text-muted {
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .stats-card small {
+          font-size: 0.75rem;
+          opacity: 0.7;
+        }
+        
+        .stats-card i {
+          opacity: 0.8;
+          transition: opacity 0.3s ease;
+        }
+        
+        .stats-card:hover i {
+          opacity: 1;
+        }
+      `}</style>
 
-      {/* Stats Cards: removed "Giá Trị Kho" per request; two cards now for balance */}
-      <Row className="mb-4 g-3">
-        <Col md={6}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.9}}>
-                <Package size={28} color="rgba(255,255,255,0.95)" />
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản Lý Thuốc</h2>
+        <Button 
+          variant="primary" 
+          onClick={handleAddNew}
+          className="d-flex align-items-center gap-2"
+        >
+          <Plus size={18} /> Thêm Thuốc Mới
+        </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="row g-3 mb-4">
+        <div className="col-md-6">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Tổng Loại Thuốc</div>
+                  <div className="h4 mb-0">{medicines.length}</div>
+                </div>
+                <i className="bi bi-capsule fs-2 text-info"></i>
               </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Tổng Loại Thuốc</h6>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="card stats-card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div className="text-muted">Danh Mục</div>
+                  <div className="h4 mb-0">{categoryOptions.length}</div>
+                </div>
+                <i className="bi bi-list-ul fs-2 text-primary"></i>
               </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{medicines.length}</h2>
-              <small style={{opacity: 0.95}}>Loại thuốc khác nhau</small>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
-          <Card className="border-0 shadow-sm" style={{
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            color: 'white',
-            borderRadius: '16px'
-          }}>
-            <Card.Body className="p-4" style={{position: 'relative', minHeight: 140}}>
-              <div style={{position: 'absolute', top: 16, right: 16, opacity: 0.95, fontSize: 20}}>
-                <span role="img" aria-label="list">📋</span>
-              </div>
-              <div className="mb-3">
-                <h6 className="mb-1" style={{fontWeight: 600}}>Danh Mục</h6>
-              </div>
-              <h2 className="mb-1" style={{fontSize: '2.5rem', fontWeight: 700}}>{categoryOptions.length}</h2>
-              <small style={{opacity: 0.95}}>Loại thuốc khác nhau</small>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Search */}
-      <Row className="mb-4">
-        <Col md={9}>
-          <div className="position-relative">
-            <Search className="position-absolute" size={20} style={{left: "16px", top: "14px", color: "#9ca3af"}} />
+      <div className="row mb-3">
+        <div className="col-md-12">
+          <div className="input-group">
+            <span className="input-group-text">
+              <Search size={18} />
+            </span>
             <Form.Control
               type="text"
               placeholder="Tìm kiếm theo STT, tên thuốc hoặc loại thuốc..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                paddingLeft: "48px",
                 height: '48px',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb',
                 fontSize: '0.95rem'
               }}
             />
           </div>
-        </Col>
-        <Col md={3} className="d-flex align-items-center justify-content-end">
-          <Button 
-            variant="primary" 
-            onClick={handleAddNew}
-            style={{
-              height: '48px',
-              borderRadius: '12px',
-              paddingLeft: '18px',
-              paddingRight: '18px',
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center'
-            }}
-          >
-            <Plus className="me-2" size={18} />
-            Thêm Thuốc Mới
-          </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {/* Medicines Table */}
       <Card className="shadow-sm border-0" style={{borderRadius: '16px'}}>
@@ -333,7 +327,6 @@ const MedicinesManagement = () => {
                   <th style={{width: 60, fontWeight: 600}}>STT</th>
                   <th style={{fontWeight: 600}}>Tên Thuốc</th>
                   <th style={{fontWeight: 600}}>Hàm Lượng</th>
-                  <th style={{fontWeight: 600}}>Dạng</th>
                   <th style={{fontWeight: 600}}>Loại</th>
                   <th style={{fontWeight: 600}}>Đơn Giá</th>
                   <th style={{fontWeight: 600, textAlign: 'center'}}>Thao Tác</th>
@@ -358,17 +351,6 @@ const MedicinesManagement = () => {
                     <td>
                       <span className="badge bg-light text-dark" style={{fontWeight: 500}}>
                         {medicine.strength || '-'}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="badge" style={{
-                        backgroundColor: '#e3f2fd',
-                        color: '#1976d2',
-                        fontWeight: 500,
-                        padding: '6px 12px',
-                        borderRadius: '6px'
-                      }}>
-                        Viên nén
                       </span>
                     </td>
                     <td>
