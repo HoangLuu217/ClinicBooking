@@ -39,6 +39,7 @@ public class UserService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
     /**
      * Lấy tất cả user với thông tin role
@@ -472,57 +473,28 @@ public class UserService {
                 throw new RuntimeException("File phải là ảnh");
             }
             
-            // Generate simple filename without timestamp
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || originalFilename.isEmpty()) {
-                throw new RuntimeException("Tên file không hợp lệ");
-            }
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String filename = "user_" + userId + extension;
-            
-            System.out.println("🖼️ Generated avatar filename: " + filename);
-            System.out.println("👤 User ID: " + userId);
-            System.out.println("📁 Extension: " + extension);
-            
-            // Save file to uploads directory
-            String uploadDir = "uploads/";
-            java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
-            if (!java.nio.file.Files.exists(uploadPath)) {
-                java.nio.file.Files.createDirectories(uploadPath);
-            }
-            
-            // Delete old avatar file if exists
+            // Delete old avatar from Cloudinary if exists
             String oldAvatarUrl = user.getAvatarUrl();
-            System.out.println("🔍 Checking old avatar: " + oldAvatarUrl);
-            if (oldAvatarUrl != null && oldAvatarUrl.startsWith("/uploads/user_")) {
+            if (oldAvatarUrl != null && oldAvatarUrl.contains("cloudinary.com")) {
                 try {
-                    java.nio.file.Path oldFilePath = java.nio.file.Paths.get("." + oldAvatarUrl);
-                    if (java.nio.file.Files.exists(oldFilePath)) {
-                        java.nio.file.Files.deleteIfExists(oldFilePath);
-                        System.out.println("🗑️ Deleted old avatar: " + oldAvatarUrl);
-                    } else {
-                        System.out.println("ℹ️ Old avatar file not found: " + oldFilePath);
-                    }
+                    cloudinaryService.deleteImage(oldAvatarUrl);
+                    System.out.println("🗑️ Deleted old avatar from Cloudinary: " + oldAvatarUrl);
                 } catch (Exception e) {
-                    System.err.println("⚠️ Could not delete old avatar: " + e.getMessage());
+                    System.err.println("⚠️ Could not delete old avatar from Cloudinary: " + e.getMessage());
                 }
-            } else {
-                System.out.println("ℹ️ No old avatar to delete or not user avatar format");
             }
             
-            java.nio.file.Path filePath = uploadPath.resolve(filename);
-            java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            // Upload to Cloudinary
+            String folder = "clinic/users";
+            String avatarUrl = cloudinaryService.uploadImage(file, folder);
             
-            System.out.println("💾 Saved avatar file to: " + filePath);
+            System.out.println("✅ Avatar uploaded to Cloudinary: " + avatarUrl);
             
             // Update user avatar
-            String avatarUrl = "/uploads/" + filename;
-            System.out.println("🔗 Avatar URL: " + avatarUrl);
-            user.setAvatarUrl(avatarUrl);    // Set avatarUrl field for compatibility
+            user.setAvatarUrl(avatarUrl);
             userRepository.save(user);
             
-            System.out.println("✅ Avatar uploaded successfully: " + avatarUrl);
-            System.out.println("📊 Final filename format: " + filename);
+            System.out.println("✅ Avatar updated successfully for user: " + userId);
             return avatarUrl;
             
         } catch (Exception e) {
