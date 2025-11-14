@@ -288,9 +288,17 @@ const DoctorScheduleManagement = () => {
       }
 
       // Create all schedules using Promise.allSettled to handle partial failures
+      console.log('🔍 handleBulkCreateSchedules - About to create schedules:', schedules);
+      console.log('🔍 Total schedules to create:', schedules.length);
+      
       const results = await Promise.allSettled(
-        schedules.map((schedule) => doctorScheduleApi.createSchedule(schedule))
+        schedules.map((schedule, index) => {
+          console.log(`🔍 Creating schedule ${index + 1}/${schedules.length}:`, schedule);
+          return doctorScheduleApi.createSchedule(schedule);
+        })
       );
+      
+      console.log('🔍 handleBulkCreateSchedules - Results:', results);
 
       // Count successes and failures
       const successful = results.filter((r) => r.status === "fulfilled").length;

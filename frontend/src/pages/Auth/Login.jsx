@@ -302,17 +302,6 @@ export default function Login() {
               />
             </div>
           )}
-          {/* reCAPTCHA */}
-          <div className="mb-4">
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LdQQQwsAAAAAKS9SLzxxyvqoGE1pi22Tqs7orBT"}
-              onChange={handleRecaptchaChange}
-              onExpired={handleRecaptchaExpired}
-              theme="light"
-              size="normal"
-            />
-          </div>
 
           <div className="flex items-center justify-between">
             <button

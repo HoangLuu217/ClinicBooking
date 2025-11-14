@@ -3,6 +3,8 @@ import axiosClient from './axiosClient';
 const doctorScheduleApi = {
   // Tạo lịch trình mới cho bác sĩ
   createSchedule: (scheduleData) => {
+    console.log('🔍 doctorScheduleApi.createSchedule called with:', scheduleData);
+    console.log('🔍 API endpoint: /api/doctor-schedules');
     return axiosClient.post('/doctor-schedules', scheduleData);
   },
 
