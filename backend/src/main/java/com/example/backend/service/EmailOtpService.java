@@ -28,6 +28,11 @@ public class EmailOtpService {
     
     @Value("${spring.mail.username:noreply@clinic.com}")
     private String fromEmail;
+    
+    // Email address để gửi email (có thể khác với MAIL_USERNAME)
+    // Với Resend: MAIL_USERNAME=resend, nhưng MAIL_FROM_EMAIL phải là email đã verify
+    @Value("${MAIL_FROM_EMAIL:${spring.mail.username}}")
+    private String fromEmailAddress;
 
     // Lưu OTP tạm thời trong memory (email -> otp)
     private final Map<String, String> otpStorage = new ConcurrentHashMap<>();
@@ -223,15 +228,25 @@ public class EmailOtpService {
             }
             
             // Kiểm tra email configuration
-            log.debug("Checking mail configuration - Username: {}", fromEmail);
+            // Với Resend/Mailgun, MAIL_USERNAME có thể không phải email (ví dụ: "resend", "apikey")
+            // Nên check MAIL_HOST và MAIL_PASSWORD thay vì fromEmail
+            String mailHost = System.getenv("MAIL_HOST");
+            String mailPassword = System.getenv("MAIL_PASSWORD");
             
-            // Enable real email mode nếu có config thật
-            boolean configured = fromEmail != null && 
-                   !fromEmail.isEmpty() && 
-                   fromEmail.contains("@") &&
-                   !fromEmail.equals("noreply@clinic.com");
+            log.debug("Checking mail configuration - Host: {}, Username: {}, Password set: {}", 
+                     mailHost, fromEmail, mailPassword != null && !mailPassword.isEmpty());
+            
+            // Enable real email mode nếu có MAIL_HOST và MAIL_PASSWORD được set
+            // Và MAIL_HOST không phải là default/localhost
+            boolean configured = mailHost != null && 
+                   !mailHost.isEmpty() && 
+                   !mailHost.equals("localhost") &&
+                   mailPassword != null && 
+                   !mailPassword.isEmpty() &&
+                   mailSender != null;
                    
-            log.info("Mail configuration check result: {}", configured);
+            log.info("Mail configuration check result: {} (Host: {}, Password configured: {})", 
+                    configured, mailHost, mailPassword != null && !mailPassword.isEmpty());
             return configured;
                    
         } catch (Exception e) {
@@ -254,7 +269,21 @@ public class EmailOtpService {
                 new org.springframework.mail.javamail.MimeMessageHelper(mimeMessage, true, "UTF-8");
             
             // Set from email with display name "Clinic Booking"
-            helper.setFrom(new InternetAddress(fromEmail, "Clinic Booking", "UTF-8"));
+            // Dùng fromEmailAddress (có thể là MAIL_FROM_EMAIL hoặc fallback về fromEmail)
+            // Nếu fromEmailAddress không phải email hợp lệ (ví dụ: "resend"), dùng một email mặc định
+            String actualFromEmail = fromEmailAddress;
+            if (actualFromEmail == null || actualFromEmail.isEmpty() || !actualFromEmail.contains("@")) {
+                // Nếu fromEmailAddress không hợp lệ, thử dùng fromEmail
+                if (fromEmail != null && fromEmail.contains("@")) {
+                    actualFromEmail = fromEmail;
+                } else {
+                    // Fallback: dùng noreply email (cần verify domain trên Resend)
+                    actualFromEmail = "noreply@onboarding.resend.dev"; // Resend default domain
+                    log.warn("⚠️ Using default Resend domain. Please set MAIL_FROM_EMAIL to your verified email/domain");
+                }
+            }
+            log.info("📧 Using from email: {}", actualFromEmail);
+            helper.setFrom(new InternetAddress(actualFromEmail, "Clinic Booking", "UTF-8"));
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true); // true = HTML
