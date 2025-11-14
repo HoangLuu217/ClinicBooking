@@ -299,8 +299,8 @@ function DoctorAppointmentList() {
     const aTime = new Date(a.startTime).getTime();
     const bTime = new Date(b.startTime).getTime();
     return aTime - bTime; // Giảm dần (mới nhất lên đầu)
-  });
-    .filter((a) => {
+  })
+  .filter((a) => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
