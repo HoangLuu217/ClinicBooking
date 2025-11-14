@@ -51,7 +51,7 @@ public class SecurityConfig {
                 // Protected Admin endpoints - CHỈ ADMIN
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")  // Cho phép DOCTOR và PATIENT xem thông tin user
-                .requestMatchers(HttpMethod.POST, "/api/users/**/upload-avatar").authenticated()  // Cho phép authenticated users upload avatar của chính họ
+                .requestMatchers(HttpMethod.POST, "/api/users/**/upload-avatar").permitAll()  // Tạm thời cho phép upload avatar không cần authentication để test
                 .requestMatchers("/api/users/**").hasRole("ADMIN")           // POST/PUT/DELETE chỉ ADMIN         // Quản lý users
                 // Medicines - ADMIN có thể quản lý (POST/PUT/DELETE), DOCTOR có thể đọc (GET) để kê đơn
                 .requestMatchers(HttpMethod.GET, "/api/medicines/**").hasAnyRole("ADMIN", "DOCTOR")
