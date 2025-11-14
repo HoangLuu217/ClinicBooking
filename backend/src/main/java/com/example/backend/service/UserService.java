@@ -518,16 +518,16 @@ public class UserService {
             // Update user avatar
             String avatarUrl = "/uploads/" + filename;
             System.out.println("🔗 Avatar URL: " + avatarUrl);
-            user.setAvatarUrl(avatarUrl);
+            user.setAvatarUrl(avatarUrl);    // Set avatarUrl field for compatibility
             userRepository.save(user);
             
             System.out.println("✅ Avatar uploaded successfully: " + avatarUrl);
+            System.out.println("📊 Final filename format: " + filename);
             return avatarUrl;
             
         } catch (Exception e) {
             System.err.println("❌ Error uploading avatar: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Lỗi khi upload ảnh: " + e.getMessage(), e);
+            throw new RuntimeException("Lỗi khi upload ảnh: " + e.getMessage());
         }
     }
     
