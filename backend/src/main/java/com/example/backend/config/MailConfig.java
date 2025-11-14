@@ -28,6 +28,14 @@ public class MailConfig {
         props.put("mail.smtp.auth", env.getProperty("spring.mail.properties.mail.smtp.auth", "true"));
         props.put("mail.smtp.starttls.enable", env.getProperty("spring.mail.properties.mail.smtp.starttls.enable", "true"));
         props.put("mail.debug", env.getProperty("spring.mail.debug", "false"));
+        
+        // Timeout settings để tránh lỗi timeout 3000ms
+        // Connection timeout: thời gian chờ khi kết nối đến SMTP server
+        props.put("mail.smtp.connectiontimeout", env.getProperty("spring.mail.properties.mail.smtp.connectiontimeout", "30000")); // 30 giây
+        // I/O timeout: thời gian chờ khi đọc/ghi dữ liệu
+        props.put("mail.smtp.timeout", env.getProperty("spring.mail.properties.mail.smtp.timeout", "30000")); // 30 giây
+        // Write timeout: thời gian chờ khi ghi dữ liệu
+        props.put("mail.smtp.writetimeout", env.getProperty("spring.mail.properties.mail.smtp.writetimeout", "30000")); // 30 giây
 
         return mailSender;
     }
