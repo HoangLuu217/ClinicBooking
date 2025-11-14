@@ -92,10 +92,3 @@ gemini:
     url: https://generativelanguage.googleapis.com/v1beta/models
   model: gemini-2.0-flash
 
-# Cloudinary Configuration
-cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME:dxwiirlxr}
-  api-key: ${CLOUDINARY_API_KEY:218617328562129}
-  api-secret: ${CLOUDINARY_API_SECRET:Y-aktTooNxABScsgjGH-HYr0n28}
-  enabled: ${CLOUDINARY_ENABLED:true}
-
