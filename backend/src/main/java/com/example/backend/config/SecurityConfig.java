@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/export/**").permitAll() // Cho phép export PDF public
                 .requestMatchers("/api/auth/**", "/api/gemini-chat/**").permitAll() // <--- thêm dòng này
+                .requestMatchers("/api/files/**").permitAll() // Cho phép upload file public (hoặc authenticated nếu muốn)
                 // Protected Admin endpoints - CHỈ ADMIN
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")  // Cho phép DOCTOR và PATIENT xem thông tin user
