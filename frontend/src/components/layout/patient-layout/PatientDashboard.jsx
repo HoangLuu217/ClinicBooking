@@ -715,26 +715,6 @@ const PatientDashboard = () => {
               >
                 <div className="p-4">
                   {/* Profile Card */}
-<<<<<<< HEAD
-                  <div className="card border-0 shadow-lg" style={{ borderRadius: '25px', background: 'linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%)', overflow: 'hidden' }}>
-                    <div className="card-body text-center p-4">
-                      {/* Avatar Section */}
-                      <div className="position-relative d-inline-block mb-3">
-                        <div 
-                          className="position-relative"
-                          style={{ cursor: 'pointer' }}
-                          onClick={handleAvatarClick}
-                          title="Click để xem ảnh đại diện"
-                        >
-                          {(() => {
-                            console.log('🔍 PatientDashboard - User data:', user);
-                            
-                            // Check if user has avatar
-                            if (user?.avatarUrl) {
-                              const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
-                              let avatarUrl = user.avatarUrl.startsWith('/uploads/') ? 
-                                `${API_BASE_URL}${user.avatarUrl}` : 
-                                user.avatarUrl;
                   <div className="card border-0 shadow-lg" style={{ borderRadius: '25px', background: isMobileView ? '#f5f5f5' : 'linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%)', overflow: 'hidden' }}>
                     <div className={`card-body ${isMobileView ? 'px-3 py-2' : 'text-center p-4'}`}>
                       {/* Desktop Layout - Centered */}
@@ -751,8 +731,9 @@ const PatientDashboard = () => {
                               
                               // Check if user has avatar
                               if (user?.avatarUrl) {
+                                const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
                                 let avatarUrl = user.avatarUrl.startsWith('/uploads/') ? 
-                                  `http://localhost:8080${user.avatarUrl}` : 
+                                  `${API_BASE_URL}${user.avatarUrl}` : 
                                   user.avatarUrl;
                                 
                                 // Add cache busting timestamp
@@ -884,8 +865,9 @@ const PatientDashboard = () => {
                                 
                                 // Check if user has avatar
                                 if (user?.avatarUrl) {
+                                  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn';
                                   let avatarUrl = user.avatarUrl.startsWith('/uploads/') ? 
-                                    `http://localhost:8080${user.avatarUrl}` : 
+                                    `${API_BASE_URL}${user.avatarUrl}` : 
                                     user.avatarUrl;
                                   
                                   // Add cache busting timestamp

@@ -10,6 +10,18 @@ const config = {
     // Use environment variable or default to production URL
     BASE_URL: process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn',
     
+    // Debug logging to verify env var is loaded
+    // Note: In production build, process.env.REACT_APP_API_BASE_URL will be replaced with actual value
+    // This log helps verify the env var was correctly injected during build
+    // eslint-disable-next-line no-console
+    _debug: (() => {
+      if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL || 'https://api.hoangluu.id.vn');
+        console.log('REACT_APP_API_BASE_URL:', process.env.REACT_APP_API_BASE_URL);
+      }
+      return null;
+    })(),
+    
     // API endpoints
     ENDPOINTS: {
       // Auth endpoints
