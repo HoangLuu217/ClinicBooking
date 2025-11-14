@@ -28,7 +28,8 @@ public class MailConfig {
         props.put("mail.smtp.auth", env.getProperty("spring.mail.properties.mail.smtp.auth", "true"));
         props.put("mail.smtp.starttls.enable", env.getProperty("spring.mail.properties.mail.smtp.starttls.enable", "true"));
         props.put("mail.smtp.starttls.required", env.getProperty("spring.mail.properties.mail.smtp.starttls.required", "true"));
-        props.put("mail.debug", env.getProperty("spring.mail.debug", "false"));
+        // Bật debug để troubleshoot email issues
+        props.put("mail.debug", env.getProperty("spring.mail.properties.mail.smtp.debug", "true"));
         
         // SSL/TLS settings cho Gmail
         props.put("mail.smtp.ssl.trust", env.getProperty("spring.mail.properties.mail.smtp.ssl.trust", "smtp.gmail.com"));

@@ -63,16 +63,22 @@ public class EmailOtpService {
                 log.info("Attempting to send real HTML email...");
                 boolean sent = sendHtmlEmail(email, subject, htmlContent);
                 if (sent) {
-                    log.info("OTP HTML email sent to: {}", email);
+                    log.info("✅ OTP HTML email sent successfully to: {}", email);
                     return true;
                 } else {
-                    log.error("Failed to send email, falling back to simulation");
-                    simulateEmail(email, subject, otp);
-                    return true;
+                    // Email gửi thất bại - log chi tiết và return false
+                    log.error("❌ FAILED to send email to: {}. Email was NOT sent!", email);
+                    log.error("OTP was generated but NOT delivered. User will NOT receive email.");
+                    // KHÔNG fallback về simulation - return false để user biết email không được gửi
+                    return false;
                 }
             } else {
-                // Simulate gửi email - hiển thị OTP trong log để test
+                // Mail server chưa được cấu hình - chỉ simulate
+                log.warn("⚠️ Mail server not configured. Simulating email send.");
                 simulateEmail(email, subject, otp);
+                // Trong production, nên return false nếu không có mail server
+                // Nhưng để tương thích, vẫn return true và log warning
+                log.warn("⚠️ WARNING: Email was simulated, not actually sent!");
                 return true;
             }
             
@@ -239,7 +245,9 @@ public class EmailOtpService {
      */
     private boolean sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
-            log.info("Attempting to send real HTML email to: {}", to);
+            log.info("📧 Attempting to send real HTML email to: {}", to);
+            log.info("📧 From email: {}", fromEmail);
+            log.info("📧 Mail sender available: {}", mailSender != null);
             
             jakarta.mail.internet.MimeMessage mimeMessage = mailSender.createMimeMessage();
             org.springframework.mail.javamail.MimeMessageHelper helper = 
@@ -251,18 +259,29 @@ public class EmailOtpService {
             helper.setSubject(subject);
             helper.setText(htmlBody, true); // true = HTML
             
+            log.info("📧 Calling mailSender.send()...");
             mailSender.send(mimeMessage);
-            log.info("HTML Email sent successfully to: {}", to);
+            log.info("✅ HTML Email sent successfully to: {}", to);
             return true;
             
         } catch (MailAuthenticationException e) {
-            log.error("Authentication failed when sending HTML email. Check username/password: {}", e.getMessage());
+            log.error("❌ Authentication failed when sending HTML email to {}. Check username/password.", to);
+            log.error("❌ Error details: {}", e.getMessage(), e);
             return false;
         } catch (MailSendException e) {
-            log.error("Failed to send HTML email to {}: {}", to, e.getMessage());
+            log.error("❌ Failed to send HTML email to {}: {}", to, e.getMessage());
+            log.error("❌ Error details: ", e);
+            if (e.getCause() != null) {
+                log.error("❌ Root cause: {}", e.getCause().getMessage());
+            }
+            return false;
+        } catch (jakarta.mail.MessagingException e) {
+            log.error("❌ MessagingException when sending HTML email to {}: {}", to, e.getMessage());
+            log.error("❌ Error details: ", e);
             return false;
         } catch (Exception e) {
-            log.error("Unexpected error when sending HTML email to {}: {}", to, e.getMessage());
+            log.error("❌ Unexpected error when sending HTML email to {}: {}", to, e.getMessage());
+            log.error("❌ Error details: ", e);
             return false;
         }
     }

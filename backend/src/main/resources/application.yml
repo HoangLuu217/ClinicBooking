@@ -54,6 +54,8 @@ spring:
           connectiontimeout: ${MAIL_SMTP_CONNECTION_TIMEOUT:30000}  # 30 giây
           timeout: ${MAIL_SMTP_TIMEOUT:30000}  # 30 giây
           writetimeout: ${MAIL_SMTP_WRITE_TIMEOUT:30000}  # 30 giây
+          # Bật debug để xem log chi tiết khi gửi email
+          debug: ${MAIL_DEBUG:true}  # Bật debug để troubleshoot
 
 server:
   port: ${PORT:8080}
