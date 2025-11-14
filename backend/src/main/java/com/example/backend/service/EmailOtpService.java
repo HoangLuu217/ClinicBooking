@@ -25,6 +25,7 @@ public class EmailOtpService {
 
     private final JavaMailSender mailSender;
     private final EmailTemplateService emailTemplateService;
+    private final ResendApiService resendApiService;
     
     @Value("${spring.mail.username:noreply@clinic.com}")
     private String fromEmail;
@@ -63,16 +64,29 @@ public class EmailOtpService {
             log.info("From email: {}", fromEmail);
             log.info("Mail sender: {}", mailSender != null ? "Available" : "Null");
             
-            // Gửi email (có thể simulate nếu không có mail server)
+            // Kiểm tra xem có nên dùng Resend API không (khi Railway block SMTP)
+            if (resendApiService.isConfigured()) {
+                log.info("📧 [Resend API] Using Resend API instead of SMTP (Railway may block SMTP)");
+                boolean sent = resendApiService.sendEmail(email, subject, htmlContent);
+                if (sent) {
+                    log.info("✅ OTP HTML email sent successfully via Resend API to: {}", email);
+                    return true;
+                } else {
+                    log.error("❌ FAILED to send email via Resend API to: {}. Email was NOT sent!", email);
+                    return false;
+                }
+            }
+            
+            // Gửi email qua SMTP (có thể simulate nếu không có mail server)
             if (mailConfigured) {
-                log.info("Attempting to send real HTML email...");
+                log.info("Attempting to send real HTML email via SMTP...");
                 boolean sent = sendHtmlEmail(email, subject, htmlContent);
                 if (sent) {
-                    log.info("✅ OTP HTML email sent successfully to: {}", email);
+                    log.info("✅ OTP HTML email sent successfully via SMTP to: {}", email);
                     return true;
                 } else {
                     // Email gửi thất bại - log chi tiết và return false
-                    log.error("❌ FAILED to send email to: {}. Email was NOT sent!", email);
+                    log.error("❌ FAILED to send email via SMTP to: {}. Email was NOT sent!", email);
                     log.error("OTP was generated but NOT delivered. User will NOT receive email.");
                     // KHÔNG fallback về simulation - return false để user biết email không được gửi
                     return false;
