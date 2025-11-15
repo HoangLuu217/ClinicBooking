@@ -5,7 +5,17 @@ const doctorScheduleApi = {
   createSchedule: (scheduleData) => {
     console.log('🔍 doctorScheduleApi.createSchedule called with:', scheduleData);
     console.log('🔍 API endpoint: /api/doctor-schedules');
-    return axiosClient.post('/doctor-schedules', scheduleData);
+    const promise = axiosClient.post('/doctor-schedules', scheduleData);
+    promise
+      .then((response) => {
+        console.log('✅ doctorScheduleApi.createSchedule - Success:', response.data);
+      })
+      .catch((error) => {
+        console.error('❌ doctorScheduleApi.createSchedule - Error:', error);
+        console.error('❌ Error response:', error.response?.data);
+        console.error('❌ Error status:', error.response?.status);
+      });
+    return promise;
   },
 
   // Lấy lịch trình theo ID

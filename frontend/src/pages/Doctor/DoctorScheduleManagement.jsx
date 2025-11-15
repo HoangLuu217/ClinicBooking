@@ -197,19 +197,28 @@ const DoctorScheduleManagement = () => {
 
   // Bulk create schedules for a week
   const handleBulkCreateSchedules = async (bulkData) => {
-    if (!doctorId) return;
+    console.log('🔍 handleBulkCreateSchedules called with:', bulkData);
+    console.log('🔍 doctorId:', doctorId);
+    
+    if (!doctorId) {
+      console.error('❌ doctorId is missing!');
+      alert('Không tìm thấy thông tin bác sĩ. Vui lòng đăng nhập lại.');
+      return;
+    }
 
     try {
       let schedules = [];
 
       // Check if data comes from new InteractiveCalendarScheduler (has schedules array)
       if (bulkData.schedules && Array.isArray(bulkData.schedules)) {
+        console.log('🔍 Using new format - schedules array:', bulkData.schedules);
         // New format: array of schedules already prepared
         schedules = bulkData.schedules.map((schedule) => ({
           ...schedule,
           doctorId,
           status: "Available",
         }));
+        console.log('🔍 Mapped schedules with doctorId:', schedules);
       } else {
         // Old format: generate schedules from date range + daysOfWeek + shifts
         const {
@@ -291,10 +300,21 @@ const DoctorScheduleManagement = () => {
       console.log('🔍 handleBulkCreateSchedules - About to create schedules:', schedules);
       console.log('🔍 Total schedules to create:', schedules.length);
       
+      if (schedules.length === 0) {
+        console.warn('⚠️ No schedules to create!');
+        alert('Không có lịch trình nào để tạo.');
+        return;
+      }
+      
+      console.log('🔍 Starting Promise.allSettled...');
       const results = await Promise.allSettled(
         schedules.map((schedule, index) => {
           console.log(`🔍 Creating schedule ${index + 1}/${schedules.length}:`, schedule);
-          return doctorScheduleApi.createSchedule(schedule);
+          const promise = doctorScheduleApi.createSchedule(schedule);
+          promise.catch((error) => {
+            console.error(`❌ Error creating schedule ${index + 1}:`, error);
+          });
+          return promise;
         })
       );
       

@@ -17,10 +17,15 @@ axiosClient.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('🔍 axiosClient - Added Authorization header with token:', token.substring(0, 10) + '...');
+    } else {
+      console.warn('⚠️ axiosClient - No token found in localStorage');
     }
+    console.log('🔍 axiosClient - Request:', config.method?.toUpperCase(), config.url);
     return config;
   },
   (error) => {
+    console.error('❌ axiosClient - Request error:', error);
     return Promise.reject(error);
   }
 );
