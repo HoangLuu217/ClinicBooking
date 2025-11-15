@@ -106,7 +106,10 @@ public class AuthService {
             // Chuyển đổi sang DTO
             UserDTO.Response userResponse = userMapper.entityToResponseDTO(user);
 
-            return new AuthDTO.LoginResponse("Đăng nhập thành công", true, userResponse, null, null, false);
+            // Tạo token (simple token = userId for now, can be upgraded to JWT later)
+            String token = String.valueOf(user.getId());
+
+            return new AuthDTO.LoginResponse("Đăng nhập thành công", true, userResponse, token, null, false);
 
         } catch (NotFoundException e) {
             return new AuthDTO.LoginResponse("Email hoặc mật khẩu không chính xác", false, null, null, null, false);
@@ -427,7 +430,11 @@ public class AuthService {
             UserDTO.Response userResponse = userMapper.entityToResponseDTO(user);
             System.out.println("DEBUG OAuth: Login successful for user = " + user.getEmail());
             System.out.println("DEBUG OAuth: UserResponse avatarUrl = '" + userResponse.getAvatarUrl() + "'");
-            return new AuthDTO.LoginResponse("Đăng nhập thành công (Google)", true, userResponse, null, null, false);
+            
+            // Tạo token (simple token = userId for now, can be upgraded to JWT later)
+            String token = String.valueOf(user.getId());
+            
+            return new AuthDTO.LoginResponse("Đăng nhập thành công (Google)", true, userResponse, token, null, false);
         } catch (Exception e) {
             System.err.println("ERROR OAuth: " + e.getMessage());
             e.printStackTrace();

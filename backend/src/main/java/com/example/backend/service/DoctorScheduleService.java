@@ -19,10 +19,12 @@ import com.example.backend.repository.DoctorScheduleRepository;
 import com.example.backend.repository.AppointmentRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class DoctorScheduleService {
 
     private final DoctorScheduleRepository doctorScheduleRepository;
@@ -31,13 +33,48 @@ public class DoctorScheduleService {
     private final AppointmentRepository appointmentRepository;
 
     public DoctorScheduleDTO.Response create(DoctorScheduleDTO.Create dto) {
-        Doctor doctor = findDoctor(dto.getDoctorId());
-        validateTimeRange(dto.getStartTime(), dto.getEndTime());
-        validateNoOverlap(dto.getDoctorId(), dto.getWorkDate(), dto.getStartTime(), dto.getEndTime());
-
-        DoctorSchedule entity = doctorScheduleMapper.createDTOToEntity(dto, doctor);
-        DoctorSchedule saved = doctorScheduleRepository.save(entity);
-        return doctorScheduleMapper.entityToResponseDTO(saved);
+        log.info("🔍 DoctorScheduleService.create called - doctorId: {}, workDate: {}, startTime: {}, endTime: {}", 
+                dto.getDoctorId(), dto.getWorkDate(), dto.getStartTime(), dto.getEndTime());
+        
+        try {
+            // Validate doctor exists
+            log.info("🔍 Finding doctor with ID: {}", dto.getDoctorId());
+            Doctor doctor = findDoctor(dto.getDoctorId());
+            log.info("✅ Doctor found: {}", doctor.getDoctorId());
+            
+            // Validate time range
+            log.info("🔍 Validating time range: {} - {}", dto.getStartTime(), dto.getEndTime());
+            validateTimeRange(dto.getStartTime(), dto.getEndTime());
+            log.info("✅ Time range is valid");
+            
+            // Validate no overlap
+            log.info("🔍 Checking for overlapping schedules");
+            validateNoOverlap(dto.getDoctorId(), dto.getWorkDate(), dto.getStartTime(), dto.getEndTime());
+            log.info("✅ No overlap found");
+            
+            // Create entity
+            log.info("🔍 Creating DoctorSchedule entity");
+            DoctorSchedule entity = doctorScheduleMapper.createDTOToEntity(dto, doctor);
+            log.info("✅ Entity created - doctor: {}, workDate: {}, startTime: {}, endTime: {}", 
+                    entity.getDoctor() != null ? entity.getDoctor().getDoctorId() : "null",
+                    entity.getWorkDate(), entity.getStartTime(), entity.getEndTime());
+            
+            // Save to database
+            log.info("🔍 Saving to database");
+            DoctorSchedule saved = doctorScheduleRepository.save(entity);
+            log.info("✅ Saved successfully - scheduleId: {}", saved.getScheduleId());
+            
+            // Convert to response DTO
+            log.info("🔍 Converting to response DTO");
+            DoctorScheduleDTO.Response response = doctorScheduleMapper.entityToResponseDTO(saved);
+            log.info("✅ Response DTO created - scheduleId: {}", response.getScheduleId());
+            
+            return response;
+            
+        } catch (Exception e) {
+            log.error("❌ Error in DoctorScheduleService.create: {}", e.getMessage(), e);
+            throw e; // Re-throw to be handled by controller
+        }
     }
 
     @Transactional(readOnly = true)

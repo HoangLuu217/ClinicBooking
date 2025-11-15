@@ -46,8 +46,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Lấy userId từ cookie
-            String userIdStr = getUserIdFromCookie(request);
+            // Lấy userId từ Authorization header (JWT token) hoặc cookie
+            String userIdStr = getUserIdFromAuthorizationHeader(request);
+            if (userIdStr == null) {
+                userIdStr = getUserIdFromCookie(request);
+            }
             
             if (userIdStr != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 try {
@@ -102,6 +105,145 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Lấy userId từ Authorization header (JWT token hoặc simple token)
+     * Format: "Bearer <token>"
+     * Hỗ trợ cả JWT token và simple token (userId)
+     */
+    private String getUserIdFromAuthorizationHeader(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String token = authHeader.substring(7).trim(); // Remove "Bearer "
+                
+                // Case 1: Token là số (userId trực tiếp)
+                try {
+                    Long userId = Long.parseLong(token);
+                    // Verify user exists
+                    Optional<User> userOpt = userRepository.findById(userId);
+                    if (userOpt.isPresent()) {
+                        System.out.println("✅ Found userId from token (direct): " + userId);
+                        return String.valueOf(userId);
+                    }
+                } catch (NumberFormatException e) {
+                    // Not a number, try JWT decode
+                }
+                
+                // Case 2: JWT token format (header.payload.signature)
+                if (token.contains(".") && token.split("\\.").length >= 2) {
+                    String[] parts = token.split("\\.");
+                    if (parts.length >= 2) {
+                        // Decode payload (base64url)
+                        String payload = parts[1];
+                        // Replace URL-safe base64 characters
+                        payload = payload.replace('-', '+').replace('_', '/');
+                        // Add padding if needed
+                        while (payload.length() % 4 != 0) {
+                            payload += "=";
+                        }
+                        
+                        // Decode base64
+                        byte[] decodedBytes = java.util.Base64.getDecoder().decode(payload);
+                        String decodedPayload = new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8);
+                        
+                        System.out.println("🔍 Decoded JWT payload: " + decodedPayload);
+                        
+                        // Try to extract userId
+                        String userIdStr = extractUserIdFromJson(decodedPayload);
+                        if (userIdStr != null) {
+                            return userIdStr;
+                        }
+                        
+                        // Try to extract email and find user
+                        String email = extractEmailFromJson(decodedPayload);
+                        if (email != null) {
+                            Optional<User> userOpt = userRepository.findByEmail(email);
+                            if (userOpt.isPresent()) {
+                                System.out.println("✅ Found userId from email in token: " + userOpt.get().getId());
+                                return String.valueOf(userOpt.get().getId());
+                            }
+                        }
+                    }
+                }
+                
+                // Case 3: Token có thể là email
+                if (token.contains("@")) {
+                    Optional<User> userOpt = userRepository.findByEmail(token);
+                    if (userOpt.isPresent()) {
+                        System.out.println("✅ Found userId from email token: " + userOpt.get().getId());
+                        return String.valueOf(userOpt.get().getId());
+                    }
+                }
+                
+            } catch (Exception e) {
+                System.err.println("❌ Error processing Authorization header: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Extract userId from JSON string
+     */
+    private String extractUserIdFromJson(String json) {
+        // Try "userId"
+        String[] patterns = {"\"userId\"", "\"id\"", "\"sub\""};
+        for (String pattern : patterns) {
+            int index = json.indexOf(pattern);
+            if (index >= 0) {
+                int colonIndex = json.indexOf(':', index);
+                if (colonIndex > 0) {
+                    // Skip whitespace
+                    int valueStart = colonIndex + 1;
+                    while (valueStart < json.length() && Character.isWhitespace(json.charAt(valueStart))) {
+                        valueStart++;
+                    }
+                    
+                    // Check if value is quoted string or number
+                    if (valueStart < json.length()) {
+                        if (json.charAt(valueStart) == '"') {
+                            // Quoted string
+                            int valueEnd = json.indexOf('"', valueStart + 1);
+                            if (valueEnd > valueStart) {
+                                return json.substring(valueStart + 1, valueEnd);
+                            }
+                        } else {
+                            // Number
+                            int valueEnd = valueStart;
+                            while (valueEnd < json.length() && 
+                                   (Character.isDigit(json.charAt(valueEnd)) || json.charAt(valueEnd) == '.')) {
+                                valueEnd++;
+                            }
+                            if (valueEnd > valueStart) {
+                                return json.substring(valueStart, valueEnd);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Extract email from JSON string
+     */
+    private String extractEmailFromJson(String json) {
+        int emailIndex = json.indexOf("\"email\"");
+        if (emailIndex >= 0) {
+            int colonIndex = json.indexOf(':', emailIndex);
+            if (colonIndex > 0) {
+                int valueStart = json.indexOf('"', colonIndex) + 1;
+                int valueEnd = json.indexOf('"', valueStart);
+                if (valueStart > 0 && valueEnd > valueStart) {
+                    return json.substring(valueStart, valueEnd);
+                }
+            }
+        }
+        return null;
     }
 
     /**

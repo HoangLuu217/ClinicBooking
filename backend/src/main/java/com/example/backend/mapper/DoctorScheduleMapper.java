@@ -41,12 +41,32 @@ public class DoctorScheduleMapper {
     }
 
     public DoctorScheduleDTO.Response entityToResponseDTO(DoctorSchedule entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("DoctorSchedule entity cannot be null");
+        }
+        
         DoctorScheduleDTO.Response dto = new DoctorScheduleDTO.Response();
         dto.setScheduleId(entity.getScheduleId());
-        dto.setDoctorId(entity.getDoctor() != null ? entity.getDoctor().getDoctorId() : null);
-        dto.setDoctorName(entity.getDoctor() != null && entity.getDoctor().getUser() != null
-                ? entity.getDoctor().getUser().getFirstName() + " " + entity.getDoctor().getUser().getLastName()
-                : null);
+        
+        // Safe null checks
+        if (entity.getDoctor() != null) {
+            dto.setDoctorId(entity.getDoctor().getDoctorId());
+            
+            // Build doctor name safely
+            if (entity.getDoctor().getUser() != null) {
+                String firstName = entity.getDoctor().getUser().getFirstName() != null 
+                    ? entity.getDoctor().getUser().getFirstName() : "";
+                String lastName = entity.getDoctor().getUser().getLastName() != null 
+                    ? entity.getDoctor().getUser().getLastName() : "";
+                dto.setDoctorName((firstName + " " + lastName).trim());
+            } else {
+                dto.setDoctorName(null);
+            }
+        } else {
+            dto.setDoctorId(null);
+            dto.setDoctorName(null);
+        }
+        
         dto.setWorkDate(entity.getWorkDate());
         dto.setStartTime(entity.getStartTime());
         dto.setEndTime(entity.getEndTime());

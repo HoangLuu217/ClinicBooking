@@ -66,6 +66,13 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+  error:
+    whitelabel:
+      enabled: false
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: true
 
 logging:
   level:

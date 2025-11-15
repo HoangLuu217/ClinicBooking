@@ -15,23 +15,25 @@ import java.time.LocalTime;
 public class DoctorSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "scheduleid")
     private Long scheduleId;
 
     @ManyToOne
-    @JoinColumn(name = "DoctorID", nullable = false)
+    @JoinColumn(name = "doctorid", nullable = false)
     private Doctor doctor;
 
-    @Column(nullable = false)
+    @Column(name = "workdate", nullable = false)
     private LocalDate workDate;
 
-    @Column(nullable = false)
+    @Column(name = "starttime", nullable = false)
     private LocalTime startTime;
 
-    @Column(nullable = false)
+    @Column(name = "endtime", nullable = false)
     private LocalTime endTime;
 
-    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'Available'")
+    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'Available'")
     private String status = "Available";
 
+    @Column(name = "notes")
     private String notes;
 }
