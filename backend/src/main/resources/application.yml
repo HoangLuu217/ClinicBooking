@@ -1,0 +1,75 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=CLINIC;encrypt=false;characterEncoding=UTF-8;sendStringParametersAsUnicode=true;useUnicode=true;responseBuffering=adaptive
+    username: sa
+    password: 123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        connection:
+          characterEncoding: UTF-8
+          useUnicode: true
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+        order_updates: true
+
+  # Email Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tungdtde180564@fpt.edu.vn
+    password: uoet gajv wcsr slqb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+logging:
+  level:
+    '[com.example.backend]': DEBUG
+    '[org.springframework.web]': DEBUG
+    '[org.hibernate.SQL]': DEBUG
+    '[org.hibernate.type.descriptor.sql.BasicBinder]': TRACE
+
+# PayOS Configuration
+payos:
+  client-id: 07e0f68d-a398-4f58-9736-b9eec34f4b5c
+  api-key: fc4929d5-0ca8-4f77-bb3f-aba33fd5d56d
+  checksum-key: d62a330768248a09706dd1d0518ef4508884aeba110e060ad3a683081268cf6c
+  base-url: https://api-merchant.payos.vn
+  return-url: http://localhost:3000/payment/success
+  cancel-url: http://localhost:3000/payment/cancel
+  webhook-url: http://localhost:8080/api/payments/webhook
+  log-level: INFO
+
+
+# Google Gemini Configuration
+gemini:
+  api:
+    key: AIzaSyCoI4QRNCjGjy22yFSmaRwe5ucn-Jmij_Y
+    url: https://generativelanguage.googleapis.com/v1beta/models
+  model: gemini-2.0-flash
+

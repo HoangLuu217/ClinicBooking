@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="com.example_backend_jar_0.0.1-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>com.example.backend.model.Prescriptions</class>
+    <class>com.example.backend.model.Appointments</class>
+    <class>com.example.backend.model.Conversations</class>
+    <class>com.example.backend.model.Messages</class>
+    <class>com.example.backend.model.Articles</class>
+    <class>com.example.backend.model.Patients</class>
+    <class>com.example.backend.model.Users</class>
+    <class>com.example.backend.model.DoctorSchedules</class>
+    <class>com.example.backend.model.PrescriptionItems</class>
+    <class>com.example.backend.model.Medicines</class>
+    <class>com.example.backend.model.SystemNotifications</class>
+    <class>com.example.backend.model.Departments</class>
+    <class>com.example.backend.model.Roles</class>
+    <class>com.example.backend.model.Reviews</class>
+    <class>com.example.backend.model.Payments</class>
+    <class>com.example.backend.model.Doctors</class>
+    <class>com.example.backend.model.MedicalRecords</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost\\Clinic:1433;databaseName=CLINIC;encrypt=true;trustServerCertificate=true; "/>
+      <property name="javax.persistence.jdbc.user" value="sa"/>
+      <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+      <property name="javax.persistence.jdbc.password" value="123"/>
+    </properties>
+  </persistence-unit>
+</persistence>

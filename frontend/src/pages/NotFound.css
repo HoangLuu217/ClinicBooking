@@ -1,0 +1,135 @@
+/*======================
+    404 page
+=======================*/
+
+.page_404 {
+  padding: 40px 0;
+  background: #fff;
+  font-family: 'Arvo', serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page_404 .container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.page_404 .row {
+  margin: 0;
+}
+
+.page_404 .col-sm-12 {
+  padding: 0;
+}
+
+.page_404 .col-sm-10 {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.page_404 img {
+  width: 100%;
+}
+
+.four_zero_four_bg {
+  background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+  height: 400px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.four_zero_four_bg h1 {
+  font-size: 80px;
+  margin: 0;
+}
+
+.four_zero_four_bg h3 {
+  font-size: 80px;
+}
+
+.contant_box_404 {
+  margin-top: -50px;
+}
+
+.contant_box_404 .h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.contant_box_404 p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.link_404 {
+  color: #fff !important;
+  padding: 12px 30px;
+  background: #39ac31;
+  margin: 20px 0;
+  display: inline-block;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: 'Arvo', serif;
+}
+
+.link_404:hover {
+  background: #2d8a26;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(57, 172, 49, 0.4);
+}
+
+.link_404:active {
+  transform: translateY(0);
+}
+
+.link_404 i {
+  margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .four_zero_four_bg {
+    height: 300px;
+  }
+
+  .four_zero_four_bg h1 {
+    font-size: 60px;
+  }
+
+  .contant_box_404 .h2 {
+    font-size: 20px;
+  }
+
+  .contant_box_404 p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .four_zero_four_bg {
+    height: 250px;
+  }
+
+  .four_zero_four_bg h1 {
+    font-size: 50px;
+  }
+
+  .contant_box_404 .h2 {
+    font-size: 18px;
+  }
+}
