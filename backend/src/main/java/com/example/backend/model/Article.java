@@ -43,6 +43,6 @@ public class Article {
     @Column(columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private String status = "ACTIVE";
 
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
     private Integer likeCount = 0;
 }

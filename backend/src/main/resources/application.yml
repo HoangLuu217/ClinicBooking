@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:sqlserver://localhost:1433;databaseName=CLINIC;encrypt=false;characterEncoding=UTF-8;sendStringParametersAsUnicode=true;useUnicode=true;responseBuffering=adaptive}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:123}
-    driver-class-name: ${DB_DRIVER:com.microsoft.sqlserver.jdbc.SQLServerDriver}
+    # PostgreSQL cho Railway (mặc định)
+    # Railway tự động cung cấp DATABASE_URL hoặc có thể dùng PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
+    # Nếu DATABASE_URL không có, sẽ build từ PGHOST, PGPORT, PGDATABASE
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/railway?sslmode=require}
+    username: ${DB_USERNAME:${PGUSER:postgres}}
+    password: ${DB_PASSWORD:${PGPASSWORD:postgres}}
+    driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -15,12 +18,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:true}
+    show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
-        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.SQLServerDialect}
+        # PostgreSQL dialect cho Railway (mặc định)
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
           implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
