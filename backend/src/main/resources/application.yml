@@ -1,11 +1,13 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
     # PostgreSQL cho Railway (mặc định)
     # Railway tự động cung cấp DATABASE_URL hoặc có thể dùng PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
     # Nếu DATABASE_URL không có, sẽ build từ PGHOST, PGPORT, PGDATABASE
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/railway?sslmode=require}
-    username: ${DB_USERNAME:${PGUSER:postgres}}
-    password: ${DB_PASSWORD:${PGPASSWORD:postgres}}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/railway?sslmode=disable}
+    username: ${DB_USERNAME:${PGUSER:}}
+    password: ${DB_PASSWORD:${PGPASSWORD:}}
     driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
     hikari:
       maximum-pool-size: 10
@@ -46,8 +48,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:465}  # Thử port 465 (SSL) thay vì 587 (STARTTLS) nếu Railway block
-    username: ${MAIL_USERNAME:tungdtde180564@fpt.edu.vn}
-    password: ${MAIL_PASSWORD:uoet gajv wcsr slqb}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -87,19 +89,19 @@ logging:
 
 # PayOS Configuration
 payos:
-  client-id: ${PAYOS_CLIENT_ID:07e0f68d-a398-4f58-9736-b9eec34f4b5c}
-  api-key: ${PAYOS_API_KEY:fc4929d5-0ca8-4f77-bb3f-aba33fd5d56d}
-  checksum-key: ${PAYOS_CHECKSUM_KEY:d62a330768248a09706dd1d0518ef4508884aeba110e060ad3a683081268cf6c}
-  base-url: https://api-merchant.payos.vn
+  client-id: ${PAYOS_CLIENT_ID:}
+  api-key: ${PAYOS_API_KEY:}
+  checksum-key: ${PAYOS_CHECKSUM_KEY:}
+  base-url: ${PAYOS_BASE_URL:https://api-merchant.payos.vn}
   return-url: ${PAYOS_RETURN_URL:http://localhost:3000/payment/success}
   cancel-url: ${PAYOS_CANCEL_URL:http://localhost:3000/payment/cancel}
   webhook-url: ${PAYOS_WEBHOOK_URL:http://localhost:8080/api/payments/webhook}
-  log-level: INFO
+  log-level: ${PAYOS_LOG_LEVEL:INFO}
 
 # Google Gemini Configuration
 gemini:
   api:
-    key: ${GEMINI_API_KEY:AIzaSyCoI4QRNCjGjy22yFSmaRwe5ucn-Jmij_Y}
-    url: https://generativelanguage.googleapis.com/v1beta/models
-  model: gemini-2.0-flash
+    key: ${GEMINI_API_KEY:}
+    url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models}
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
 
