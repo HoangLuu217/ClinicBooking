@@ -22,10 +22,11 @@ import lombok.NoArgsConstructor;
 public class MedicalRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "record_id")
     private Integer recordId;
 
     @OneToOne
-    @JoinColumn(name = "AppointmentID", nullable = false)
+    @JoinColumn(name = "appointmentid", nullable = false)
     private Appointment appointment;
 
     @Column(columnDefinition = "TEXT")
@@ -33,6 +34,7 @@ public class MedicalRecord {
     @Column(columnDefinition = "TEXT")
     private String advice;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "medicalRecord")

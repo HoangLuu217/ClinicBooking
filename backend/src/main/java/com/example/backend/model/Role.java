@@ -36,7 +36,7 @@ public class Role {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "roleid")
+    @Column(name = "RoleID")
     private Long id;
 
     /**
@@ -44,14 +44,14 @@ public class Role {
      */
     @NotBlank(message = "Tên vai trò không được để trống")
     @Size(max = 50, message = "Tên vai trò không được quá 50 ký tự")
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "Name", unique = true, nullable = false)
     private String name;
 
     /**
      * Mô tả về vai trò
      */
     @Size(max = 255, message = "Mô tả không được quá 255 ký tự")
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "Description", columnDefinition = "TEXT")
     private String description;
 
     /**

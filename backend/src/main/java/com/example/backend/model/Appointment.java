@@ -27,24 +27,25 @@ import lombok.NoArgsConstructor;
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "appointment_id")
     private Long appointmentId;
 
     @ManyToOne
-    @JoinColumn(name = "PatientID", nullable = true)
+    @JoinColumn(name = "patientid", nullable = true)
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "DoctorID", nullable = false)
+    @JoinColumn(name = "doctorid", nullable = false)
     private Doctor doctor;
 
     @ManyToOne
-    @JoinColumn(name = "ScheduleID")
+    @JoinColumn(name = "scheduleid")
     private DoctorSchedule schedule;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @Column(columnDefinition = "VARCHAR(30) DEFAULT 'Scheduled'")
@@ -52,7 +53,7 @@ public class Appointment {
 
     private String notes;
 
-    @Column(name = "Fee")
+    @Column(name = "fee")
     private BigDecimal fee;
 
     @OneToOne(mappedBy = "appointment")

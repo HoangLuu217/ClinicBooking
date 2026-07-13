@@ -11,24 +11,24 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "DoctorSchedules")
+@Table(name = "doctor_schedules")
 public class DoctorSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "scheduleid")
+    @Column(name = "schedule_id")
     private Long scheduleId;
 
     @ManyToOne
     @JoinColumn(name = "doctorid", nullable = false)
     private Doctor doctor;
 
-    @Column(name = "workdate", nullable = false)
+    @Column(name = "work_date", nullable = false)
     private LocalDate workDate;
 
-    @Column(name = "starttime", nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "endtime", nullable = false)
+    @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
     @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'Available'")
